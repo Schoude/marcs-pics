@@ -1,3 +1,6 @@
+use mongodb::bson::oid::ObjectId;
+use serde::{Deserialize, Serialize};
+
 /// MongoDB document schema of PhotoBox.
 /// ```jsonc
 /// {
@@ -28,9 +31,10 @@
 ///   "created_at": UTC-Date
 /// }
 /// ```
+#[derive(Debug, Serialize, Deserialize)]
 pub struct PhotoBox {
-    _id: String,
-    owner_id: String,
+    _id: ObjectId,
+    owner_id: ObjectId,
     firebase_root_folder_name: String,
     firebase_folder_name: String,
     photo_box_name: String,

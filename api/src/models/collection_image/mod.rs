@@ -1,4 +1,6 @@
 use super::collection_image_comment::CollectionImageComment;
+use mongodb::bson::oid::ObjectId;
+use serde::{Deserialize, Serialize};
 
 /// MongoDB document schema for CollectionImage.
 /// ```jsonc
@@ -30,8 +32,9 @@ use super::collection_image_comment::CollectionImageComment;
 ///   "created_at": UTC-Date
 /// }
 /// ```
+#[derive(Debug, Serialize, Deserialize)]
 pub struct CollectionImage {
-    _id: String,
+    _id: ObjectId,
     url: String,
     description: String,
     tags: Vec<String>,

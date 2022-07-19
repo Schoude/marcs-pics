@@ -1,4 +1,6 @@
 use super::collection_image::CollectionImage;
+use mongodb::bson::oid::ObjectId;
+use serde::{Deserialize, Serialize};
 
 /// MongoDB document scheme of SharedCollection
 /// ```jsonc
@@ -41,9 +43,10 @@ use super::collection_image::CollectionImage;
 ///   }]
 /// }
 /// ```
+#[derive(Debug, Serialize, Deserialize)]
 pub struct SharedCollection {
-    _id: String,
-    photo_box_id: String,
+    _id: ObjectId,
+    photo_box_id: ObjectId,
     hash: String,
     description: String,
     images: Vec<CollectionImage>,

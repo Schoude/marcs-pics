@@ -1,3 +1,6 @@
+use mongodb::bson::oid::ObjectId;
+use serde::{Deserialize, Serialize};
+
 /// MongoDB document schema for CollectionImageComment.
 /// ```jsonc
 /// {
@@ -28,10 +31,11 @@
 ///   "created_at": UTC-Date
 /// }
 /// ```
+#[derive(Debug, Serialize, Deserialize)]
 pub struct CollectionImageComment {
-  _id: String,
-  creator_name: String,
-  creator_email: String,
-  text: String,
-  created_at: String,
+    _id: ObjectId,
+    creator_name: String,
+    creator_email: String,
+    text: String,
+    created_at: String,
 }

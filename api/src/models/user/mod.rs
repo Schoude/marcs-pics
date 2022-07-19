@@ -1,3 +1,7 @@
+use mongodb::bson::oid::ObjectId;
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Serialize, Deserialize)]
 enum UserRole {
     Admin,
 }
@@ -18,8 +22,9 @@ enum UserRole {
 ///   "role": "Admin"
 /// }
 /// ```
+#[derive(Debug, Serialize, Deserialize)]
 pub struct User {
-    _id: String,
+    _id: ObjectId,
     nickname: String,
     email: String,
     password: String,
