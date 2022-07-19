@@ -6,15 +6,6 @@ pub enum UserRole {
     Admin,
 }
 
-/// Same struct as User but without the _id field.
-#[derive(Debug, Serialize, Deserialize)]
-pub struct NewUser {
-    pub nickname: String,
-    pub email: String,
-    pub password: String,
-    pub role: UserRole,
-}
-
 /// MongoDB document schema of a user.
 ///
 /// Example document:
@@ -33,7 +24,7 @@ pub struct NewUser {
 /// ```
 #[derive(Debug, Serialize, Deserialize)]
 pub struct User {
-    pub _id: ObjectId,
+    pub _id: Option<ObjectId>,
     pub nickname: String,
     pub email: String,
     pub password: String,
