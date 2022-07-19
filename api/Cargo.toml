@@ -8,3 +8,8 @@ edition = "2021"
 [dependencies]
 mongodb = "2.3.0"
 serde = { version = "1.0.139", features = ["derive"] }
+serde_json = "1.0"
+
+[dependencies.rocket]
+version = "0.5.0-rc.2"
+features = ["json"]
