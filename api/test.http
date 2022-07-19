@@ -1,0 +1,5 @@
+### Hello World
+GET http://localhost:8000/api
+
+### Not Found cather
+GET http://localhost:8000/api/does-not-exists

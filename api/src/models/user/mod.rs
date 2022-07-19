@@ -2,8 +2,17 @@ use mongodb::bson::oid::ObjectId;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
-enum UserRole {
+pub enum UserRole {
     Admin,
+}
+
+/// Same struct as User but without the _id field.
+#[derive(Debug, Serialize, Deserialize)]
+pub struct NewUser {
+    pub nickname: String,
+    pub email: String,
+    pub password: String,
+    pub role: UserRole,
 }
 
 /// MongoDB document schema of a user.
@@ -24,9 +33,9 @@ enum UserRole {
 /// ```
 #[derive(Debug, Serialize, Deserialize)]
 pub struct User {
-    _id: ObjectId,
-    nickname: String,
-    email: String,
-    password: String,
-    role: UserRole,
+    pub _id: ObjectId,
+    pub nickname: String,
+    pub email: String,
+    pub password: String,
+    pub role: UserRole,
 }

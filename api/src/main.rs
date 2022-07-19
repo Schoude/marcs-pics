@@ -1,6 +1,8 @@
-use rocket::serde::json::{json, Value};
-
+mod handlers;
 mod models;
+
+use handlers::user::add_user;
+use rocket::serde::json::{json, Value};
 
 #[macro_use]
 extern crate rocket;
@@ -24,6 +26,6 @@ fn not_found() -> Value {
 #[launch]
 fn rocket() -> _ {
     rocket::build()
-        .mount(API_BASE, routes![hello_world])
+        .mount(API_BASE, routes![hello_world, add_user])
         .register(API_BASE, catchers!(not_found))
 }

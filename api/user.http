@@ -1,0 +1,14 @@
+### API endpoints for User
+
+### POST a User
+# @name lets you save the request in a variable
+# @name newUser
+POST http://localhost:8000/api/user
+Content-Type: application/json
+
+{
+  "nickname": "Marc",
+  "email": "test@test.de",
+  "password": "crypt-me",
+  "role": "Admin"
+}
