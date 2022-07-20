@@ -9,6 +9,9 @@ pub fn add_user(
     db: &State<MongoORM>,
     user: Json<User>,
 ) -> Result<(Status, Json<InsertOneResult>), Status> {
+    // TODO: check if user with the email/username already exists
+    // Return Status::UnprocessableEntity
+
     let new_user = User {
         id: None,
         nickname: user.nickname.to_owned(),

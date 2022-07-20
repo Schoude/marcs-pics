@@ -36,16 +36,9 @@ impl MongoORM {
     }
 
     pub fn create_user(&self, new_user: User) -> Result<InsertOneResult, Error> {
-        let new_user_doc = User {
-            id: None,
-            nickname: new_user.nickname,
-            email: new_user.email,
-            password: new_user.password,
-            role: new_user.role,
-        };
-        let inserted_user = self
+      let inserted_user = self
             .user_collection
-            .insert_one(new_user_doc, None)
+            .insert_one(new_user, None)
             .ok()
             .expect("Error creating user in DB.");
 
