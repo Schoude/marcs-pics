@@ -23,19 +23,17 @@ impl MongoORM {
             Err(e) => format!("Error loading the env variable: {e}"),
         };
 
-        let uri: String;
-        if env == "development" {
-            // get the connection uri from the .env file
-            uri = match env::var("MONGOURI") {
+        let uri = if env == "development" {
+            match env::var("MONGOURI") {
                 Ok(val) => val,
                 Err(e) => format!("Error loading the env variable: {e}"),
-            };
+            }
         } else {
-            uri = match env::var("MONGOURI_PROD") {
+            match env::var("MONGOURI_PROD") {
                 Ok(val) => val,
                 Err(e) => format!("Error loading the env variable: {e}"),
-            };
-        }
+            }
+        };
 
         // create the client and init the MongoORM struct with associated DB name the user collection.
         let client = match Client::with_uri_str(uri) {
