@@ -11,11 +11,15 @@ use std::env;
 const DB_NAME: &str = "marcs_pics";
 const USER_COLLECTION_NAME: &str = "users";
 
+/// Wrapper around the MongoDB client with all collections.
 pub struct MongoORM {
     user_collection: Collection<User>,
 }
 
 impl MongoORM {
+    /// Initializes the MongoDB client.
+    /// Depending on the `ENVIRONMENT` value in the `.env` files the client connects
+    /// to the local database or the MongoDB Atlas cluster.
     pub fn init() -> Self {
         dotenv().ok();
         let env = match env::var("ENVIRONMENT") {
@@ -46,6 +50,7 @@ impl MongoORM {
         MongoORM { user_collection }
     }
 
+    /// Inserts a single new user into the database.
     pub fn create_user(&self, new_user: User) -> Result<InsertOneResult, Error> {
         let inserted_user = self
             .user_collection
