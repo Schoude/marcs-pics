@@ -14,7 +14,7 @@ pub fn add_user(
     // TODO: check if user with the email/username already exists
     // Return Status::UnprocessableEntity
 
-    let hashed_pw = match hash(user.password.to_owned(), 4) {
+    let hashed_pw = match hash(&user.password, 4) {
         Ok(val) => val,
         Err(_) => panic!("Error hashing to password."),
     };

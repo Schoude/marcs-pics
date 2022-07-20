@@ -9,7 +9,7 @@ use mongodb::{
 use std::env;
 
 const DB_NAME: &str = "marcs_pics";
-const USER_COLLECTION_NAME: &str = "marcs_pics";
+const USER_COLLECTION_NAME: &str = "users";
 
 pub struct MongoORM {
     user_collection: Collection<User>,
@@ -18,11 +18,24 @@ pub struct MongoORM {
 impl MongoORM {
     pub fn init() -> Self {
         dotenv().ok();
-        // get the connection uri from the .env file
-        let uri = match env::var("MONGOURI") {
+        let env = match env::var("ENVIRONMENT") {
             Ok(val) => val,
             Err(e) => format!("Error loading the env variable: {e}"),
         };
+
+        let uri: String;
+        if env == "development" {
+            // get the connection uri from the .env file
+            uri = match env::var("MONGOURI") {
+                Ok(val) => val,
+                Err(e) => format!("Error loading the env variable: {e}"),
+            };
+        } else {
+            uri = match env::var("MONGOURI_PROD") {
+                Ok(val) => val,
+                Err(e) => format!("Error loading the env variable: {e}"),
+            };
+        }
 
         // create the client and init the MongoORM struct with associated DB name the user collection.
         let client = match Client::with_uri_str(uri) {
@@ -36,10 +49,9 @@ impl MongoORM {
     }
 
     pub fn create_user(&self, new_user: User) -> Result<InsertOneResult, Error> {
-      let inserted_user = self
+        let inserted_user = self
             .user_collection
             .insert_one(new_user, None)
-            .ok()
             .expect("Error creating user in DB.");
 
         Ok(inserted_user)
