@@ -1,5 +1,8 @@
 ### Hello World
 GET http://localhost:8000/api
 
+### Hello World with JSON Response
+GET http://localhost:8000/api/hello
+
 ### Not Found cather
 GET http://localhost:8000/api/does-not-exists
