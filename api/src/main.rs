@@ -1,14 +1,16 @@
+mod db;
 mod handlers;
 mod models;
 
+#[macro_use]
+extern crate rocket;
+
+use db::mongodb::MongoORM;
 use handlers::user::add_user;
 use rocket::{
     http::Status,
     serde::json::{json, Json, Value},
 };
-
-#[macro_use]
-extern crate rocket;
 
 const API_BASE: &str = "/api";
 
@@ -33,7 +35,10 @@ fn not_found() -> Value {
 
 #[launch]
 fn rocket() -> _ {
+    let db = MongoORM::init();
+
     rocket::build()
         .mount(API_BASE, routes![hello_world, hello, add_user])
         .register(API_BASE, catchers!(not_found))
+        .manage(db)
 }

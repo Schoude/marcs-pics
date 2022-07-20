@@ -24,7 +24,8 @@ pub enum UserRole {
 /// ```
 #[derive(Debug, Serialize, Deserialize)]
 pub struct User {
-    pub _id: Option<ObjectId>,
+    #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
+    pub id: Option<ObjectId>,
     pub nickname: String,
     pub email: String,
     pub password: String,

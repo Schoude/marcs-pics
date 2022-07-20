@@ -1,6 +1,6 @@
 ### API endpoints for User
 
-### POST a User
+### Create a User
 # @name lets you save the request in a variable
 # @name newUser
 POST http://localhost:8000/api/user
