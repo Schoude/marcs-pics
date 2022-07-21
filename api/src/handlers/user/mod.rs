@@ -5,7 +5,7 @@ use crate::{
     models::user::{User, UserFound, UserUpdate},
 };
 use bcrypt::hash;
-use mongodb::results::InsertOneResult;
+use mongodb::results::{DeleteResult, InsertOneResult};
 use rocket::{http::Status, serde::json::Json, State};
 
 /// Route handler to create a new user.
@@ -85,6 +85,28 @@ pub fn update_nickname_or_email(
                     Ok(user) => Ok((Status::Ok, Json(user))),
                     Err(_) => Err(Status::InternalServerError),
                 }
+            } else {
+                Err(Status::NotFound)
+            }
+        }
+        Err(_) => Err(Status::InternalServerError),
+    }
+}
+
+/// Deletes a single user identified by its ObjectId.
+#[delete("/user/<id>")]
+pub fn delete_user_by_id(
+    db: &State<MongoORM>,
+    id: String,
+) -> Result<(Status, Json<DeleteResult>), Status> {
+    if id.is_empty() {
+        return Err(Status::BadRequest);
+    }
+    let delete_result = db.delete_user_by_id(&id);
+    match delete_result {
+        Ok(res) => {
+            if res.deleted_count == 1 {
+                Ok((Status::Ok, Json(res)))
             } else {
                 Err(Status::NotFound)
             }

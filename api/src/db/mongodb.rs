@@ -4,7 +4,7 @@ use dotenv::dotenv;
 use mongodb::{
     bson::{doc, extjson::de::Error, oid::ObjectId},
     options::FindOneOptions,
-    results::{InsertOneResult, UpdateResult},
+    results::{DeleteResult, InsertOneResult, UpdateResult},
     sync::{Client, Collection},
 };
 use std::env;
@@ -64,7 +64,7 @@ impl MongoORM {
     pub fn get_user_by_id(&self, id: &String) -> Result<UserFound, Error> {
         let obj_id = match ObjectId::parse_str(id) {
             Ok(oid) => oid,
-            Err(_) => panic!("Error parsing the id"),
+            Err(e) => return Err(Error::InvalidObjectId(e)),
         };
         let filter = doc! { "_id": obj_id };
         let filter_options = Some(
@@ -89,7 +89,7 @@ impl MongoORM {
     ) -> Result<UpdateResult, Error> {
         let obj_id = match ObjectId::parse_str(id) {
             Ok(oid) => oid,
-            Err(_) => panic!("Error parsing the id"),
+            Err(e) => return Err(Error::InvalidObjectId(e)),
         };
         let filter = doc! { "_id": obj_id };
         let update = doc! {
@@ -103,5 +103,20 @@ impl MongoORM {
             .update_one(filter, update, None)
             .expect("Error updating User");
         Ok(updated_res)
+    }
+
+    /// Deletes the User for the given id.
+    pub fn delete_user_by_id(&self, id: &String) -> Result<DeleteResult, Error> {
+        let obj_id = match ObjectId::parse_str(id) {
+            Ok(oid) => oid,
+            Err(e) => return Err(Error::InvalidObjectId(e)),
+        };
+        let filter = doc! { "_id": obj_id };
+        let delete_result = self
+            .user_collection
+            .delete_one(filter, None)
+            .expect("Error deleting user");
+
+        Ok(delete_result)
     }
 }

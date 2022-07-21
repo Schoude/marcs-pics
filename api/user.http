@@ -20,6 +20,9 @@ Content-Type: application/json
 @lastAddedUserId={{newUser.response.body.$.insertedId.$oid}}
 GET http://localhost:8000/api/user/{{lastAddedUserId}}
 
+### Test for invalid ObjectId - returns 500
+GET http://localhost:8000/api/user/not-a-object-id
+
 
 ### Update a User's nickname or email
 # Variable only works if the previous request created a User.
@@ -31,3 +34,9 @@ Content-Type: 'application/json'
   "nickname": "Marc the Shark",
   "email": "cool@hool.me"
 }
+
+
+### Delete a User by id
+# Variable only works if the previous request created a User.
+@lastAddedUserId={{newUser.response.body.$.insertedId.$oid}}
+DELETE http://localhost:8000/api/user/{{lastAddedUserId}}

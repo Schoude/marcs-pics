@@ -6,7 +6,7 @@ mod models;
 extern crate rocket;
 
 use db::mongodb::MongoORM;
-use handlers::user::{add_user, get_user_by_id, update_nickname_or_email};
+use handlers::user::{add_user, delete_user_by_id, get_user_by_id, update_nickname_or_email};
 use rocket::{
     http::Status,
     serde::json::{json, Json, Value},
@@ -42,7 +42,12 @@ fn rocket() -> _ {
         // User endpoints
         .mount(
             API_BASE,
-            routes![add_user, get_user_by_id, update_nickname_or_email],
+            routes![
+                add_user,
+                get_user_by_id,
+                update_nickname_or_email,
+                delete_user_by_id
+            ],
         )
         .register(API_BASE, catchers!(not_found))
         .manage(db)
