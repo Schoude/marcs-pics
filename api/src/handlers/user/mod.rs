@@ -1,6 +1,9 @@
 extern crate bcrypt;
 
-use crate::{db::mongodb::MongoORM, models::user::User};
+use crate::{
+    db::mongodb::MongoORM,
+    models::user::{User, UserFound},
+};
 use bcrypt::hash;
 use mongodb::results::InsertOneResult;
 use rocket::{http::Status, serde::json::Json, State};
@@ -37,6 +40,23 @@ pub fn add_user(
     let inserted_user_id = db.create_user(new_user);
     match inserted_user_id {
         Ok(user_id) => Ok((Status::Created, Json(user_id))),
+        Err(_) => Err(Status::InternalServerError),
+    }
+}
+
+/// Returns a single user identified by its ObjectId.
+#[get("/user/<id>")]
+pub fn get_user_by_id(
+    db: &State<MongoORM>,
+    id: String,
+) -> Result<(Status, Json<UserFound>), Status> {
+    if id.is_empty() {
+        return Err(Status::BadRequest);
+    }
+
+    let user = db.get_user_by_id(id);
+    match user {
+        Ok(user) => Ok((Status::Ok, Json(user))),
         Err(_) => Err(Status::InternalServerError),
     }
 }

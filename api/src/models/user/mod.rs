@@ -31,3 +31,14 @@ pub struct User {
     pub password: String,
     pub role: UserRole,
 }
+
+/// Identical with `User` struct only missing the `password` field
+/// and having the id formatted as `_id`.
+/// This struct should be used for `Users` consumed by the frontend.
+#[derive(Serialize, Deserialize)]
+pub struct UserFound {
+    pub _id: ObjectId,
+    pub nickname: String,
+    pub email: String,
+    pub role: UserRole,
+}

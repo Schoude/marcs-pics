@@ -1,8 +1,9 @@
 extern crate dotenv;
-use crate::models::user::User;
+use crate::models::user::{User, UserFound};
 use dotenv::dotenv;
 use mongodb::{
-    bson::extjson::de::Error,
+    bson::{doc, extjson::de::Error, oid::ObjectId},
+    options::FindOneOptions,
     results::InsertOneResult,
     sync::{Client, Collection},
 };
@@ -56,7 +57,27 @@ impl MongoORM {
             .user_collection
             .insert_one(new_user, None)
             .expect("Error creating user in DB.");
-
         Ok(inserted_user)
+    }
+
+    /// Returns a single user identified by the ObjectId.
+    pub fn get_user_by_id(&self, id: String) -> Result<UserFound, Error> {
+        let obj_id = match ObjectId::parse_str(id) {
+            Ok(oid) => oid,
+            Err(_) => panic!("Error parsing the id"),
+        };
+        let filter = doc! { "_id": obj_id };
+        let filter_options = Some(
+            FindOneOptions::builder()
+                .projection(Some(doc! {"password": 0}))
+                .build(),
+        );
+        let found_user = self
+            .user_collection
+            .clone_with_type::<UserFound>()
+            .find_one(filter, filter_options)
+            .expect("Error getting the user ")
+            .unwrap();
+        Ok(found_user)
     }
 }
