@@ -119,4 +119,15 @@ impl MongoORM {
 
         Ok(delete_result)
     }
+
+    /// Gets all Users.
+    pub fn get_all_users(&self) -> Result<Vec<UserFound>, Error> {
+        let user_cursor = self
+            .user_collection
+            .clone_with_type::<UserFound>()
+            .find(None, None)
+            .expect("Error getting all users");
+        let users = user_cursor.map(|doc| doc.unwrap()).collect();
+        Ok(users)
+    }
 }

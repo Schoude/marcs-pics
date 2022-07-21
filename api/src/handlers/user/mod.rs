@@ -114,3 +114,13 @@ pub fn delete_user_by_id(
         Err(_) => Err(Status::InternalServerError),
     }
 }
+
+/// Gets all Users.
+#[get("/users")]
+pub fn get_all_users(db: &State<MongoORM>) -> Result<(Status, Json<Vec<UserFound>>), Status> {
+    let users = db.get_all_users();
+    match users {
+        Ok(users) => Ok((Status::Ok, Json(users))),
+        Err(_) => Err(Status::InternalServerError),
+    }
+}
