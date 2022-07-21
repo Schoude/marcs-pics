@@ -1,5 +1,6 @@
 ### API endpoints for User
 
+
 ### Create a User
 # @name lets you save the request in a variable
 # @name newUser
@@ -13,7 +14,20 @@ Content-Type: application/json
   "role": "Admin"
 }
 
+
 ### Get a User by id
 # Variable only works if the previous request created a User.
 @lastAddedUserId={{newUser.response.body.$.insertedId.$oid}}
 GET http://localhost:8000/api/user/{{lastAddedUserId}}
+
+
+### Update a User's nickname or email
+# Variable only works if the previous request created a User.
+@lastAddedUserId={{newUser.response.body.$.insertedId.$oid}}
+PUT http://localhost:8000/api/user/{{lastAddedUserId}}
+Content-Type: 'application/json'
+
+{
+  "nickname": "Marc the Shark",
+  "email": "cool@hool.me"
+}

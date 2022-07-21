@@ -2,7 +2,7 @@ extern crate bcrypt;
 
 use crate::{
     db::mongodb::MongoORM,
-    models::user::{User, UserFound},
+    models::user::{User, UserFound, UserUpdate},
 };
 use bcrypt::hash;
 use mongodb::results::InsertOneResult;
@@ -54,9 +54,41 @@ pub fn get_user_by_id(
         return Err(Status::BadRequest);
     }
 
-    let user = db.get_user_by_id(id);
+    let user = db.get_user_by_id(&id);
     match user {
         Ok(user) => Ok((Status::Ok, Json(user))),
+        Err(_) => Err(Status::InternalServerError),
+    }
+}
+
+/// Updates a Users `nickname` or `email` and returns the modified User.
+#[put("/user/<id>", data = "<user_update>")]
+pub fn update_nickname_or_email(
+    db: &State<MongoORM>,
+    id: String,
+    user_update: Json<UserUpdate>,
+) -> Result<(Status, Json<UserFound>), Status> {
+    if id.is_empty() {
+        return Err(Status::BadRequest);
+    }
+
+    let update = UserUpdate {
+        nickname: user_update.nickname.to_owned(),
+        email: user_update.email.to_owned(),
+    };
+    let update_res = db.update_nickname_or_email(&id, update);
+    match update_res {
+        Ok(update) => {
+            if update.matched_count == 1 {
+                let updated_user = db.get_user_by_id(&id);
+                match updated_user {
+                    Ok(user) => Ok((Status::Ok, Json(user))),
+                    Err(_) => Err(Status::InternalServerError),
+                }
+            } else {
+                Err(Status::NotFound)
+            }
+        }
         Err(_) => Err(Status::InternalServerError),
     }
 }

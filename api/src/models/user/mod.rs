@@ -42,3 +42,10 @@ pub struct UserFound {
     pub email: String,
     pub role: UserRole,
 }
+
+/// Used to update a User's nickname and email from a PUT request.
+#[derive(Serialize, Deserialize)]
+pub struct UserUpdate {
+    pub nickname: String,
+    pub email: String,
+}

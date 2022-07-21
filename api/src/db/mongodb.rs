@@ -1,10 +1,10 @@
 extern crate dotenv;
-use crate::models::user::{User, UserFound};
+use crate::models::user::{User, UserFound, UserUpdate};
 use dotenv::dotenv;
 use mongodb::{
     bson::{doc, extjson::de::Error, oid::ObjectId},
     options::FindOneOptions,
-    results::InsertOneResult,
+    results::{InsertOneResult, UpdateResult},
     sync::{Client, Collection},
 };
 use std::env;
@@ -61,7 +61,7 @@ impl MongoORM {
     }
 
     /// Returns a single user identified by the ObjectId.
-    pub fn get_user_by_id(&self, id: String) -> Result<UserFound, Error> {
+    pub fn get_user_by_id(&self, id: &String) -> Result<UserFound, Error> {
         let obj_id = match ObjectId::parse_str(id) {
             Ok(oid) => oid,
             Err(_) => panic!("Error parsing the id"),
@@ -79,5 +79,29 @@ impl MongoORM {
             .expect("Error getting the user ")
             .unwrap();
         Ok(found_user)
+    }
+
+    /// Updates a Users `nickname` or `email` and returns the modified User.
+    pub fn update_nickname_or_email(
+        &self,
+        id: &String,
+        user_update: UserUpdate,
+    ) -> Result<UpdateResult, Error> {
+        let obj_id = match ObjectId::parse_str(id) {
+            Ok(oid) => oid,
+            Err(_) => panic!("Error parsing the id"),
+        };
+        let filter = doc! { "_id": obj_id };
+        let update = doc! {
+            "$set": {
+                "nickname": user_update.nickname,
+                "email": user_update.email,
+            }
+        };
+        let updated_res = self
+            .user_collection
+            .update_one(filter, update, None)
+            .expect("Error updating User");
+        Ok(updated_res)
     }
 }
