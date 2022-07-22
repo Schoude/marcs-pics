@@ -18,7 +18,8 @@ use serde::{Deserialize, Serialize};
 ///     "2022"
 ///   ],
 ///
-///   // plain urls of all the images of the photo_box - the ordering is arbitrary.
+///   // plain urls of all the images of the photo_box - the ordering is arbitrary
+///   // MAY NOT BE NEEDED. THE ROOT AND FOLDER NAME OF FIREBASE RETURN THESE URLS
 ///   "photo_urls": [
 ///     "https://marcs-pics-usa2022.firebase.com/image1",
 ///     "https://marcs-pics-usa2022.firebase.com/image2",
@@ -40,6 +41,5 @@ pub struct PhotoBox {
     display_name: String,
     description: String,
     tags: Vec<String>,
-    photo_urls: Vec<String>,
     created_at: String,
 }

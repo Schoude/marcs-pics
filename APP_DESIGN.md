@@ -58,7 +58,7 @@ I try to use as little cross collection lookups as possible and save the data to
   "_id": ObjectId('3032ef76-ac01-4730-b540-a705a2139d18'),
   "owner_id": ObjectId('9a895880-c891-426f-80dc-ed0094a1a455'),
 
-  // both firesbase fields are needed to get the files references fot the photobox
+  // both firebase fields are needed to get the files references fot the photobox
   "firebase_root_folder_name": "marcs-pics",
   "firebase_folder_name": "usa2022",
   "display_name": "USA Reise 2022",
@@ -72,13 +72,14 @@ I try to use as little cross collection lookups as possible and save the data to
   ],
 
   // plain urls of all the images of the photo_box - the ordering is arbitrary.
-  "photo_urls": [
-    "https://marcs-pics-usa2022.firebase.com/image1",
-    "https://marcs-pics-usa2022.firebase.com/image2",
-    "https://marcs-pics-usa2022.firebase.com/image3",
-    "https://marcs-pics-usa2022.firebase.com/image4",
-    "https://marcs-pics-usa2022.firebase.com/image4",
-  ],
+  // MAY NOT BE NEEDED. THE ROOT AND FOLDER NAME OF FIREBASE RETURN THESE URLS
+  // "photo_urls": [
+  //   "https://marcs-pics-usa2022.firebase.com/image1",
+  //   "https://marcs-pics-usa2022.firebase.com/image2",
+  //   "https://marcs-pics-usa2022.firebase.com/image3",
+  //   "https://marcs-pics-usa2022.firebase.com/image4",
+  //   "https://marcs-pics-usa2022.firebase.com/image4",
+  // ],
 
   // set in JS or get it from the "_id" ObjectId instance if availablei
   "created_at": UTC-Date
