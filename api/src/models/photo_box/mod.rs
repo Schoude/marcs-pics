@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 ///   "owner_id": ObjectId('9a895880-c891-426f-80dc-ed0094a1a455'),
 ///   "firebase_root_folder_name": "marcs-pics",
 ///   "firebase_folder_name": "usa2022",
-///   "photo_box_name": "USA Reise 2022",
+///   "display_name": "USA Reise 2022",
 ///   "description": "The photos of my trip to the USA!",
 ///
 ///   // can be empty but not missing
@@ -19,7 +19,7 @@ use serde::{Deserialize, Serialize};
 ///   ],
 ///
 ///   // plain urls of all the images of the photo_box - the ordering is arbitrary.
-///   "urls": [
+///   "photo_urls": [
 ///     "https://marcs-pics-usa2022.firebase.com/image1",
 ///     "https://marcs-pics-usa2022.firebase.com/image2",
 ///     "https://marcs-pics-usa2022.firebase.com/image3",
@@ -37,9 +37,9 @@ pub struct PhotoBox {
     owner_id: ObjectId,
     firebase_root_folder_name: String,
     firebase_folder_name: String,
-    photo_box_name: String,
+    display_name: String,
     description: String,
     tags: Vec<String>,
-    urls: Vec<String>,
+    photo_urls: Vec<String>,
     created_at: String,
 }
