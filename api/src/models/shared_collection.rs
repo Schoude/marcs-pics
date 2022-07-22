@@ -7,6 +7,9 @@ use serde::{Deserialize, Serialize};
 /// // struct SharedCollection
 /// {
 ///   "_id": ObjectId('e7b2645d-e2fc-49e8-af32-800fa05a831f'),
+///
+///   // password field is optional
+///   "password": "$bryptedpw",
 ///   "photo_box_id": ObjectId('3032ef76-ac01-4730-b540-a705a2139d18'),
 ///
 ///   // create a search index for the "hash" field
@@ -45,10 +48,23 @@ use serde::{Deserialize, Serialize};
 /// ```
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SharedCollection {
-    _id: ObjectId,
-    photo_box_id: ObjectId,
-    hash: String,
-    description: String,
-    images: Vec<CollectionImage>,
-    created_at: String,
+    pub _id: ObjectId,
+    pub photo_box_id: ObjectId,
+    pub password: String,
+    pub hash: String,
+    pub description: String,
+    pub images: Vec<CollectionImage>,
+    pub created_at: String,
+}
+
+/// Helper struct that is sent from the frontend.
+/// `_id` and `created_at` are generated in the hanlder function.
+/// The `photo_box_id` gets converted from a String into an `ObjectId`.
+#[derive(Debug, Serialize, Deserialize)]
+pub struct SharedCollectionCreate {
+    pub photo_box_id: String,
+    pub password: String,
+    pub hash: String,
+    pub description: String,
+    pub images: Vec<CollectionImage>,
 }

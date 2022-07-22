@@ -4,7 +4,7 @@
 
 ### Interacting with the app
 1) Only one user is the admin and can create and edit shared collections.
-2) Shared collections can only be viewed when visiting from a deeplink like `https://marcs-pics.tk/collection/693202b5-fd2a-457e-993e-8308b838d88e`
+2) Shared collections can only be viewed when visiting from a deeplink like `https://marcs-pics.tk/collection?hash=693202b5-fd2a-457e-993e-8308b838d88e`
 3) The creator of a shared collection can sort the photos, give them a description and tags. The global tags from the photo box to which the image is related to get copied over to each image. More individual tags can be added for each image.
 4) Known tags from the photo box of other images should be shown as suggestions for better UX.
 5) Shared collections can be password protected.
