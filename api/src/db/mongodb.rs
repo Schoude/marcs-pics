@@ -148,4 +148,14 @@ impl MongoORM {
             .expect("Error inserting the PhotoBox");
         Ok(inserted_photo_box)
     }
+
+    /// Returns all PhotoBoxes.
+    pub fn get_all_photo_boxes(&self) -> Result<Vec<PhotoBox>, Error> {
+        let photo_boxes_cursor = self
+            .photo_boxes_collection
+            .find(None, None)
+            .expect("Error getting all PhotoBoxes");
+        let photo_boxes = photo_boxes_cursor.map(|doc| doc.unwrap()).collect();
+        Ok(photo_boxes)
+    }
 }

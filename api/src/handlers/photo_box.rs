@@ -1,10 +1,9 @@
-use mongodb::{bson::oid::ObjectId, results::InsertOneResult};
-use rocket::{http::Status, serde::json::Json, State};
-
 use crate::{
     db::mongodb::MongoORM,
     models::photo_box::{PhotoBox, PhotoBoxCreate},
 };
+use mongodb::{bson::oid::ObjectId, results::InsertOneResult};
+use rocket::{http::Status, serde::json::Json, State};
 
 /// Adds a new `PhotoBox`.
 /// Notice that the frontend needs to send a `PhotoBoxCreate` struct.
@@ -32,6 +31,16 @@ pub fn add_photo_box(
     let inserted_photo_box_result = db.create_photo_box(photo_box);
     match inserted_photo_box_result {
         Ok(photo_box_id) => Ok((Status::Created, Json(photo_box_id))),
+        Err(_) => Err(Status::InternalServerError),
+    }
+}
+
+/// Get all PhotoBoxes.
+#[get("/photo-boxes")]
+pub fn get_all_photo_boxes(db: &State<MongoORM>) -> Result<(Status, Json<Vec<PhotoBox>>), Status> {
+    let photo_boxes = db.get_all_photo_boxes();
+    match photo_boxes {
+        Ok(photo_boxes) => Ok((Status::Ok, Json(photo_boxes))),
         Err(_) => Err(Status::InternalServerError),
     }
 }

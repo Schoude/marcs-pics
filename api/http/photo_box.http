@@ -14,3 +14,6 @@ Content-Type: application/json
     "2022"
   ]
 }
+
+### Get all PhotoBoxes.
+GET http://localhost:8000/api/photo-boxes
