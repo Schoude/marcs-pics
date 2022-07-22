@@ -1,4 +1,4 @@
-use mongodb::bson::oid::ObjectId;
+use mongodb::bson::{oid::ObjectId, DateTime};
 use serde::{Deserialize, Serialize};
 
 /// MongoDB document schema of PhotoBox.
@@ -34,13 +34,26 @@ use serde::{Deserialize, Serialize};
 /// ```
 #[derive(Debug, Serialize, Deserialize)]
 pub struct PhotoBox {
-    #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
-    id: Option<ObjectId>,
-    owner_id: ObjectId,
-    firebase_root_folder_name: String,
-    firebase_folder_name: String,
-    display_name: String,
-    description: String,
-    tags: Vec<String>,
-    created_at: String,
+    // #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
+    pub _id: ObjectId,
+    pub owner_id: ObjectId,
+    pub firebase_root_folder_name: String,
+    pub firebase_folder_name: String,
+    pub display_name: String,
+    pub description: String,
+    pub tags: Vec<String>,
+    pub created_at: DateTime,
+}
+
+/// Helper struct that is sent from the frontend.
+/// `_id` and `created_at` are generated in the hanlder function.
+/// The `owner_id` gets converted from a String into an `ObjectId`.
+#[derive(Debug, Serialize, Deserialize)]
+pub struct PhotoBoxCreate {
+    pub owner_id: String,
+    pub firebase_root_folder_name: String,
+    pub firebase_folder_name: String,
+    pub display_name: String,
+    pub description: String,
+    pub tags: Vec<String>,
 }

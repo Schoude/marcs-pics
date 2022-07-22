@@ -1,0 +1,16 @@
+### Create a new PhotoBpx
+POST http://localhost:8000/api/photo-box
+Content-Type: application/json
+
+{
+  "owner_id": "62d9d5cffdb13a0a68cb45b0",
+  "firebase_root_folder_name": "marcs-pics",
+  "firebase_folder_name": "usa2022",
+  "display_name": "Meine U.S.A-Reise 2022",
+  "description": "Beschreibung folgt",
+  "tags": [
+    "USA",
+    "Groundhopping",
+    "2022"
+  ]
+}
