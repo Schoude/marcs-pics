@@ -2,7 +2,7 @@
 
 ## App MVP
 
-### Interactions with the app
+### Interacting with the app
 1) Only one user is the admin and can create and edit shared collections.
 2) Shared collections can only be viewed when visiting from a deeplink like `https://marcs-pics.tk/collection/693202b5-fd2a-457e-993e-8308b838d88e`
 3) The creator of a shared collection can sort the photos, give them a description and tags. The global tags from the photo box to which the image is related to get copied over to each image. More individual tags can be added for each image.
@@ -11,9 +11,9 @@
 6) Visitors of the shared collection can leave a comment as a guest user.
 
 #### Future features
-1) Add a location marker with a map.
+1) Add a location marker with a map where the picture was taken (maybe use the photos meta data).
 2) Shared collections with photos from multiple photo boxes.
-3) PWA with persistant storage of the shared collection. Let's the user view already downloaded images offline (i am guessing here that this could work).
+3) PWA with persistent storage of the shared collection. Let's the user view already downloaded images offline (i am guessing that this could work).
 
 ### Retrieving a shared collection via deeplink
 
@@ -22,7 +22,7 @@ There are two scenarios a user can face:
 or
 2) it __is__ password protected.
 
-In either cass the app makes an API call to the server and gets the shared collection related to the hash. If the collection is **not** password protected (i.e. the password field is not there), the response contains the full collection.
+In either cass the app makes an API call to the server and gets the shared collection related to the hash. If the collection is **not** password protected (i.e. the password field is not there on the entry in the database), the response contains the full collection.
 
 If the found collection is password protected the API endpoint returns a 401 with a special response body or cookie. This tells the app to show the password input view. After the user inputs a password the same endpoint gets called with the password as the request body, then validated agains the password of the shared collection (401 if invalid) or 200 with the full collection as the response.
 
@@ -32,7 +32,7 @@ the site without having to enter the password again. Lifetime should be one week
 <hr>
 
 ## Data models and MongoDB collections
-I try to use as little cross collection lookups as possible and save the data together in the Document.
+I try to use as little cross collection lookups as possible and save the data together in one Document.
 
 ### Document schemas
 0) `users` <br> For now there is only one user and admin (me).
