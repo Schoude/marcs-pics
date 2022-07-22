@@ -34,7 +34,6 @@ use serde::{Deserialize, Serialize};
 /// ```
 #[derive(Debug, Serialize, Deserialize)]
 pub struct PhotoBox {
-    // #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
     pub _id: ObjectId,
     pub owner_id: ObjectId,
     pub firebase_root_folder_name: String,

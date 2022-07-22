@@ -1,4 +1,4 @@
-use mongodb::bson::oid::ObjectId;
+use mongodb::{bson::oid::ObjectId, results::InsertOneResult};
 use rocket::{http::Status, serde::json::Json, State};
 
 use crate::{
@@ -8,15 +8,19 @@ use crate::{
 
 /// Adds a new `PhotoBox`.
 /// Notice that the frontend needs to send a `PhotoBoxCreate` struct.
+///
+/// `firebase_folder_name` has to be unique.
+/// #### **ADD A UNIQUE COMPOMPOUND INDEX ON THE DATABASE COLLECTION LEVEL**
+/// #### Reference: https://www.mongodb.com/docs/manual/core/index-unique/#unique-compound-index
 #[post("/photo-box", format = "json", data = "<new_photo_box>")]
 pub fn add_photo_box(
-    _db: &State<MongoORM>,
+    db: &State<MongoORM>,
     new_photo_box: Json<PhotoBoxCreate>,
-) -> Result<Status, Status> {
+) -> Result<(Status, Json<InsertOneResult>), Status> {
     let _id = ObjectId::new();
     let photo_box = PhotoBox {
         _id,
-        owner_id: ObjectId::parse_str(new_photo_box.owner_id.to_owned()).unwrap(),
+        owner_id: ObjectId::parse_str(&new_photo_box.owner_id).unwrap(),
         firebase_root_folder_name: new_photo_box.firebase_root_folder_name.to_owned(),
         firebase_folder_name: new_photo_box.firebase_folder_name.to_owned(),
         display_name: new_photo_box.display_name.to_owned(),
@@ -25,6 +29,9 @@ pub fn add_photo_box(
         created_at: _id.timestamp(),
     };
 
-    println!("{:?}", photo_box);
-    Ok(Status::Created)
+    let inserted_photo_box_result = db.create_photo_box(photo_box);
+    match inserted_photo_box_result {
+        Ok(photo_box_id) => Ok((Status::Created, Json(photo_box_id))),
+        Err(_) => Err(Status::InternalServerError),
+    }
 }

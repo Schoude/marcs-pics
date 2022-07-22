@@ -139,4 +139,13 @@ impl MongoORM {
         let users = user_cursor.map(|doc| doc.unwrap()).collect();
         Ok(users)
     }
+
+    /// Inserts a single PhotoBox.
+    pub fn create_photo_box(&self, new_photo_box: PhotoBox) -> Result<InsertOneResult, Error> {
+        let inserted_photo_box = self
+            .photo_boxes_collection
+            .insert_one(new_photo_box, None)
+            .expect("Error inserting the PhotoBox");
+        Ok(inserted_photo_box)
+    }
 }
