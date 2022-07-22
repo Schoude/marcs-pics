@@ -12,7 +12,7 @@ use rocket::{http::Status, serde::json::Json, State};
 /// Users need to have a unique nickname and email.
 ///
 /// #### **ADD A UNIQUE COMPOMPOUND INDEX ON THE DATABASE COLLECTION LEVEL**
-/// #### Reference: https://www.mongodb.com/docs/manual/core/index-unique/#unique-compound-index
+/// #### Reference: <https://www.mongodb.com/docs/manual/core/index-unique/#unique-compound-index>
 /// Inserting a non-unique email or nickname panics in this fn. Rocket treats it as a 500 error.
 /// Maybe the MongoDB driver still needs to implement handling this error gracefully.
 #[post("/user", format = "json", data = "<user>")]

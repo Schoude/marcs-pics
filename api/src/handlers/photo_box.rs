@@ -10,7 +10,7 @@ use rocket::{http::Status, serde::json::Json, State};
 ///
 /// `firebase_folder_name` has to be unique.
 /// #### **ADD A UNIQUE COMPOMPOUND INDEX ON THE DATABASE COLLECTION LEVEL**
-/// #### Reference: https://www.mongodb.com/docs/manual/core/index-unique/#unique-compound-index
+/// #### Reference: <https://www.mongodb.com/docs/manual/core/index-unique/#unique-compound-index>
 #[post("/photo-box", format = "json", data = "<new_photo_box>")]
 pub fn add_photo_box(
     db: &State<MongoORM>,
