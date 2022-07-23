@@ -38,6 +38,15 @@ fn not_found() -> Value {
     })
 }
 
+/// Add this route after the static file server router to have SPA fallback
+/// that redirects all unmatched routes to the SPA's index.html.
+// #[get("/<_..>", rank = 2)]
+// async fn spa_fallback() -> Option<NamedFile> {
+//     NamedFile::open(Path::new("static/").join("index.html"))
+//         .await
+//         .ok()
+// }
+
 #[launch]
 fn rocket() -> _ {
     let db = MongoORM::init();
@@ -67,4 +76,8 @@ fn rocket() -> _ {
         )
         .register(API_BASE, catchers!(not_found))
         .manage(db)
+    // uncomment these lines to have a static files server
+    // with SPA fallback for unmatched files that redirect to the root index.html
+    // .mount("/", FileServer::from(relative!("static")).rank(1))
+    // .mount("/", routes![spa_fallback])
 }
