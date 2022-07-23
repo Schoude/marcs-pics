@@ -6,7 +6,9 @@ mod models;
 extern crate rocket;
 
 use db::mongodb::MongoORM;
-use handlers::photo_box::{add_photo_box, get_all_photo_boxes};
+use handlers::photo_box::{
+    add_photo_box, get_all_photo_boxes, get_photo_box_by_id, update_photo_box,
+};
 use handlers::user::{
     add_user, delete_user_by_id, get_all_users, get_user_by_id, update_nickname_or_email,
 };
@@ -53,8 +55,16 @@ fn rocket() -> _ {
                 get_all_users,
             ],
         )
-        // PhotoBox endpoints:w
-        .mount(API_BASE, routes![add_photo_box, get_all_photo_boxes])
+        // PhotoBox endpoints
+        .mount(
+            API_BASE,
+            routes![
+                add_photo_box,
+                get_all_photo_boxes,
+                update_photo_box,
+                get_photo_box_by_id
+            ],
+        )
         .register(API_BASE, catchers!(not_found))
         .manage(db)
 }

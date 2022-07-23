@@ -1,6 +1,6 @@
 extern crate dotenv;
 use crate::models::{
-    photo_box::PhotoBox,
+    photo_box::{PhotoBox, PhotoBoxUpdate},
     user::{User, UserFound, UserUpdate},
 };
 use dotenv::dotenv;
@@ -157,5 +157,47 @@ impl MongoORM {
             .expect("Error getting all PhotoBoxes");
         let photo_boxes = photo_boxes_cursor.map(|doc| doc.unwrap()).collect();
         Ok(photo_boxes)
+    }
+
+    /// Returns a single PhotoBox identified by the ObjectId.
+    pub fn get_photo_box_by_id(&self, id: &String) -> Result<PhotoBox, Error> {
+        let obj_id = match ObjectId::parse_str(id) {
+            Ok(oid) => oid,
+            Err(e) => return Err(Error::InvalidObjectId(e)),
+        };
+        let filter = doc! { "_id": obj_id };
+        let found_photo_box = self
+            .photo_boxes_collection
+            .find_one(filter, None)
+            .expect("Error getting the PhotoBox.")
+            .unwrap();
+        Ok(found_photo_box)
+    }
+
+    /// Updates a PhotoBoxes field except the `owner_id`.
+    pub fn update_photo_box(
+        &self,
+        id: &String,
+        photo_box_update: PhotoBoxUpdate,
+    ) -> Result<UpdateResult, Error> {
+        let obj_id = match ObjectId::parse_str(id) {
+            Ok(oid) => oid,
+            Err(e) => return Err(Error::InvalidObjectId(e)),
+        };
+        let filter = doc! { "_id": obj_id };
+        let update = doc! {
+            "$set": {
+                "firebase_root_folder_name": photo_box_update.firebase_root_folder_name,
+                "firebase_folder_name": photo_box_update.firebase_folder_name,
+                "display_name": photo_box_update.display_name,
+                "description": photo_box_update.description,
+                "tags": photo_box_update.tags,
+            }
+        };
+        let updated_res = self
+            .photo_boxes_collection
+            .update_one(filter, update, None)
+            .expect("Error updating PhotoBox");
+        Ok(updated_res)
     }
 }

@@ -56,3 +56,13 @@ pub struct PhotoBoxCreate {
     pub description: String,
     pub tags: Vec<String>,
 }
+
+/// Helper struct that is used to update a PhotoBox.
+#[derive(Debug, Serialize, Deserialize)]
+pub struct PhotoBoxUpdate {
+    pub firebase_root_folder_name: String,
+    pub firebase_folder_name: String,
+    pub display_name: String,
+    pub description: String,
+    pub tags: Vec<String>,
+}

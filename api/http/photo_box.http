@@ -15,5 +15,26 @@ Content-Type: application/json
   ]
 }
 
+
+### Update a PhotoBox by id.
+PUT http://localhost:8000/api/photo-box/62dc005ff610b93f275edad2
+Content-Type: application/json
+
+{
+  "firebase_root_folder_name": "marcs-films",
+  "firebase_folder_name": "comingsoon2023",
+  "display_name": "Korea-Reise 2023",
+  "description": "Beschreibung folgt, wenn ich die Reise angetreten habe...",
+  "tags": [
+    "Korea",
+    "food tour",
+    "2023"
+  ]
+}
+
+
 ### Get all PhotoBoxes.
 GET http://localhost:8000/api/photo-boxes
+
+### Get a PhotoBox by its id.
+GET http://localhost:8000/api/photo-box/62dc005ff610b93f275edad2
