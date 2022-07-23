@@ -36,5 +36,6 @@ Content-Type: application/json
 ### Get all PhotoBoxes.
 GET http://localhost:8000/api/photo-boxes
 
+
 ### Get a PhotoBox by its id.
 GET http://localhost:8000/api/photo-box/62dc005ff610b93f275edad2
