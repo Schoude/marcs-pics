@@ -12,10 +12,12 @@ use handlers::photo_box::{
 use handlers::user::{
     add_user, delete_user_by_id, get_all_users, get_user_by_id, update_nickname_or_email,
 };
+use rocket::fs::{relative, FileServer, NamedFile};
 use rocket::{
     http::Status,
     serde::json::{json, Json, Value},
 };
+use std::path::Path;
 
 const API_BASE: &str = "/api";
 
@@ -36,6 +38,14 @@ fn not_found() -> Value {
         "status": "error",
         "reason": "Resource was not found."
     })
+}
+
+/// Redirects all not found routes to the root `index.html`
+#[get("/<_..>", rank = 2)]
+async fn fallback() -> Option<NamedFile> {
+    NamedFile::open(Path::new("static/").join("index.html"))
+        .await
+        .ok()
 }
 
 /// Add this route after the static file server router to have SPA fallback
@@ -76,6 +86,8 @@ fn rocket() -> _ {
         )
         .register(API_BASE, catchers!(not_found))
         .manage(db)
+        .mount("/", FileServer::from(relative!("site")).rank(1))
+        .mount("/", routes![fallback])
     // uncomment these lines to have a static files server
     // with SPA fallback for unmatched files that redirect to the root index.html
     // .mount("/", FileServer::from(relative!("static")).rank(1))
