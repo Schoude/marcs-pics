@@ -8,6 +8,7 @@ const SESSION_COOKIE_NAME: &str = "m_p_session";
 
 /// Checks the Users's credentials and on success sets a session cookie.
 #[post("/login")]
+// TODO: add json field with the login credentials
 pub fn login(cookies: &CookieJar) -> Status {
     // 1) find the user by email
     // 1.2) if not found respond with 404
@@ -31,7 +32,7 @@ pub fn login(cookies: &CookieJar) -> Status {
     Status::Accepted
 }
 
-/// Logout a user by removing the session cookie and deleting the session entry in the database.
+/// Logs the user out by removing the session cookie and deleting the session entry in the database.
 #[post("/logout")]
 pub fn logout(cookies: &CookieJar) -> Status {
     // 1) remove session cookie
@@ -41,7 +42,7 @@ pub fn logout(cookies: &CookieJar) -> Status {
     Status::Accepted
 }
 
-/// Returns the User if a session cookie and a session in the database are present.
+/// Returns UserFound if both a session cookie and a session in the database are present.
 #[get("/me")]
 // actually should return Result<(Json(UserFound), Status), Status>
 pub fn me(cookies: &CookieJar) -> Status {
