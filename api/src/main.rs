@@ -6,6 +6,7 @@ mod models;
 extern crate rocket;
 
 use db::mongodb::MongoORM;
+use handlers::auth::{login, logout, me};
 use handlers::photo_box::{
     add_photo_box, get_all_photo_boxes, get_photo_box_by_id, update_photo_box,
 };
@@ -43,7 +44,7 @@ fn not_found() -> Value {
 /// Redirects all not found routes to the root `index.html`
 #[get("/<_..>", rank = 2)]
 async fn fallback() -> Option<NamedFile> {
-    NamedFile::open(Path::new("static/").join("index.html"))
+    NamedFile::open(Path::new("site/").join("index.html"))
         .await
         .ok()
 }
@@ -62,6 +63,8 @@ fn rocket() -> _ {
     let db = MongoORM::init();
 
     rocket::build()
+        // auth routes
+        .mount(API_BASE, routes![login, logout, me])
         .mount(API_BASE, routes![hello_world, hello,])
         // User endpoints
         .mount(

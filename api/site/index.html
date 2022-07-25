@@ -19,4 +19,12 @@
   <h2>Übersicht deiner Kollektionen</h2>
 </body>
 
+<script type="module">
+  const res = await fetch('/api/me');
+  console.log(res.status);
+  if (res.status === 401) {
+    window.location.pathname = '/login';
+  }
+</script>
+
 </html>

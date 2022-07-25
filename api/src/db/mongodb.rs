@@ -4,6 +4,7 @@ use crate::models::{
     user::{User, UserFound, UserUpdate},
 };
 use dotenv::dotenv;
+use mongodb::bson::Document;
 use mongodb::{
     bson::{doc, extjson::de::Error, oid::ObjectId},
     options::FindOneOptions,
@@ -15,11 +16,14 @@ use std::env;
 const DB_NAME: &str = "marcs_pics";
 const USER_COLLECTION_NAME: &str = "users";
 const PHOTO_BOX_COLLECTION_NAME: &str = "photo_boxes";
+const USER_SESSIONS_COLLECTION_NAME: &str = "user_sessions";
 
 /// Wrapper around the MongoDB client with all collections.
 pub struct MongoORM {
     user_collection: Collection<User>,
     photo_boxes_collection: Collection<PhotoBox>,
+    // TODO: change to UserSession struct
+    user_sessions_collection: Collection<Document>,
 }
 
 impl MongoORM {
@@ -54,9 +58,13 @@ impl MongoORM {
         let user_collection = db.collection::<User>(USER_COLLECTION_NAME);
         let photo_boxes_collection = db.collection::<PhotoBox>(PHOTO_BOX_COLLECTION_NAME);
 
+        // TODO: change 'Document' to UserSesssion struct
+        let user_sessions_collection = db.collection::<Document>(USER_SESSIONS_COLLECTION_NAME);
+
         MongoORM {
             user_collection,
             photo_boxes_collection,
+            user_sessions_collection,
         }
     }
 

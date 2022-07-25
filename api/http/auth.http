@@ -1,0 +1,16 @@
+### Log in and get a user session.
+POST http://localhost:8000/api/login
+Content-Type: application/application/json
+
+{
+  "email": "sadsf@ada.de",
+  "password": "adadasd"
+}
+
+### Log out and remove the session.
+POST http://localhost:8000/api/logout
+
+
+### Gets the User date of a active user session. Otherwise returns 401.
+# Does not work..! But the actual request from the browser works.
+GET http://localhost:8000/api/me

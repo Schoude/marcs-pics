@@ -11,6 +11,38 @@
 
 <body>
   <h1>Bitte melde Dich an.</h1>
+  <form>
+    <fieldset>
+      <label>
+        E-Mail
+        <input type="email" autocomplete="email">
+      </label>
+      <label>
+        Passwort
+        <input type="password" autocomplete="current-password">
+      </label>
+    </fieldset>
+    <button>Anmelden</button>
+  </form>
 </body>
+
+<script>
+  // naive redirect to overview page if user already has a session cookie.
+  if (document.cookie.includes('m_p_session')) {
+    window.location.pathname = '/';
+  }
+
+  async function onSubmit(e) {
+    e.preventDefault();
+
+    const res = await fetch('/api/login', { method: 'POST' });
+    console.log(res.status);
+    if (res.status === 202) {
+      setTimeout(() => window.location.pathname = ('/'), 3000);
+    }
+  }
+
+  document.querySelector('form').addEventListener('submit', onSubmit);
+</script>
 
 </html>
