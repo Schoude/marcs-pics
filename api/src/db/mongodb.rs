@@ -239,6 +239,16 @@ impl MongoORM {
         Ok(insert_result)
     }
 
+    /// Gets the user session with the given hash.
+    pub fn get_user_session_by_hash(&self, hash: &str) -> Result<UserSession, Error> {
+        let find_one_result = self
+            .user_sessions_collection
+            .find_one(doc! {"hash": hash}, None)
+            .expect("Error deleting the user session.")
+            .unwrap();
+        Ok(find_one_result)
+    }
+
     /// Deletes the user session with the given hash.
     pub fn delete_user_session_by_hash(&self, hash: &str) -> Result<DeleteResult, Error> {
         let delete_result = self

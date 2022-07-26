@@ -1,4 +1,8 @@
-use crate::{db::mongodb::MongoORM, models::auth::Credentials, utils::random_string};
+use crate::{
+    db::mongodb::MongoORM,
+    models::{auth::Credentials, user::UserFound},
+    utils::random_string,
+};
 use base64::{decode, encode};
 use bcrypt::verify;
 use rocket::{
@@ -91,22 +95,31 @@ pub fn logout(cookies: &CookieJar, db: &State<MongoORM>) -> Status {
 /// Returns UserFound if both a session cookie and a session in the database are present.
 #[get("/me")]
 // actually should return Result<(Json(UserFound), Status), Status>
-pub fn me(cookies: &CookieJar) -> Status {
+pub fn me(cookies: &CookieJar, db: &State<MongoORM>) -> Result<(Status, Json<UserFound>), Status> {
     // 1) try to get the cookie
     let cookie = match cookies.get(SESSION_COOKIE_NAME) {
         Some(c) => c,
         None => {
             println!("no cookie found");
-            return Status::Unauthorized;
+            return Err(Status::Unauthorized);
         }
     };
 
     // 2) decode the cookkie value -> user session id in db
-    let value = cookie.value();
-    println!("value {value}");
+    let hash = cookie.value();
+    let bytes = match decode(hash) {
+        Ok(res) => res,
+        Err(_) => return Err(Status::InternalServerError),
+    };
+    let decoded_hash = str::from_utf8(&bytes).unwrap();
+    let found_session = match db.get_user_session_by_hash(decoded_hash) {
+        Ok(session) => session,
+        Err(_) => return Err(Status::InternalServerError),
+    };
 
-    // 3) try to get user session in db
-    // 4) make a new UserFound from the data in the session cookie
-    // 5) return the UserFound as Json
-    Status::Ok
+    let found_user = db.get_user_by_id(&found_session.user_id.to_string());
+    match found_user {
+        Ok(user) => Ok((Status::Ok, Json(user))),
+        Err(_) => Err(Status::InternalServerError),
+    }
 }

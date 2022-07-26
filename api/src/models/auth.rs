@@ -9,7 +9,7 @@ pub struct Credentials {
 }
 
 /// MongoDB schema for a User auth session.
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)]
 pub struct UserSession {
     pub _id: ObjectId,
     pub user_id: ObjectId,
