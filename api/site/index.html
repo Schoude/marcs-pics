@@ -18,21 +18,20 @@
     </nav>
   </header>
   <h1>Übersicht</h1>
-  <h2>Übersicht deiner Fotoboxen</h2>
-  <h2>Übersicht deiner Kollektionen</h2>
+  <h2>Deine Fotoboxen</h2>
+  <h2>Deine Kollektionen</h2>
 </body>
 
 <script type="module">
   const btnLogout = document.querySelector('button');
   const res = await fetch('/api/me');
-  console.log(res.status);
+
   if (res.status === 401) {
     window.location.pathname = '/login';
   }
 
   async function onLogout() {
     const res = await fetch('/api/logout', { method: 'POST' });
-    console.log(res.status);
 
     if (res.status === 202) {
       window.location.pathname = '/login';

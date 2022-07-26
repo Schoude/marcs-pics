@@ -26,7 +26,12 @@
   </form>
 </body>
 
-<script>
+<script type="module">
+  const res = await fetch('/api/me');
+  if (res.status === 200) {
+    window.location.pathname = '/';
+  }
+
   const emailEl = document.querySelector('input[type="email"]');
   const passwordEl = document.querySelector('input[type="password"]');
 
