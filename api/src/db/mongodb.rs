@@ -1,10 +1,10 @@
 extern crate dotenv;
 use crate::models::{
+    auth::UserSession,
     photo_box::{PhotoBox, PhotoBoxUpdate},
     user::{User, UserFound, UserUpdate},
 };
 use dotenv::dotenv;
-use mongodb::bson::Document;
 use mongodb::{
     bson::{doc, extjson::de::Error, oid::ObjectId},
     options::FindOneOptions,
@@ -22,8 +22,7 @@ const USER_SESSIONS_COLLECTION_NAME: &str = "user_sessions";
 pub struct MongoORM {
     user_collection: Collection<User>,
     photo_boxes_collection: Collection<PhotoBox>,
-    // TODO: change to UserSession struct
-    user_sessions_collection: Collection<Document>,
+    user_sessions_collection: Collection<UserSession>,
 }
 
 impl MongoORM {
@@ -58,8 +57,7 @@ impl MongoORM {
         let user_collection = db.collection::<User>(USER_COLLECTION_NAME);
         let photo_boxes_collection = db.collection::<PhotoBox>(PHOTO_BOX_COLLECTION_NAME);
 
-        // TODO: change 'Document' to UserSesssion struct
-        let user_sessions_collection = db.collection::<Document>(USER_SESSIONS_COLLECTION_NAME);
+        let user_sessions_collection = db.collection::<UserSession>(USER_SESSIONS_COLLECTION_NAME);
 
         MongoORM {
             user_collection,
@@ -218,5 +216,24 @@ impl MongoORM {
             .update_one(filter, update, None)
             .expect("Error updating PhotoBox");
         Ok(updated_res)
+    }
+
+    /// Creates a user session.
+    pub fn create_user_session(
+        &self,
+        user_id: &ObjectId,
+        hash: &String,
+    ) -> Result<InsertOneResult, Error> {
+        let session = UserSession {
+            id: None,
+            user_id: *user_id,
+            hash: hash.to_string(),
+        };
+
+        let insert_result = self
+            .user_sessions_collection
+            .insert_one(session, None)
+            .expect("Error creating the user session.");
+        Ok(insert_result)
     }
 }

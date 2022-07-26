@@ -1,4 +1,5 @@
-use crate::{db::mongodb::MongoORM, models::auth::Credentials};
+use crate::{db::mongodb::MongoORM, models::auth::Credentials, utils::random_string};
+use base64::encode;
 use bcrypt::verify;
 use rocket::{
     http::{Cookie, CookieJar, SameSite, Status},
@@ -10,7 +11,7 @@ use rocket::{
 const SESSION_COOKIE_LIFE_TIME_SECONDS: i64 = 600;
 const SESSION_COOKIE_NAME: &str = "m_p_session";
 
-/// Checks the Users's credentials and on success sets a session cookie.
+/// Checks the Users's credentials, on success sets a session cookie and saves a session in the database.
 #[post("/login", format = "json", data = "<credentials>")]
 pub fn login(cookies: &CookieJar, db: &State<MongoORM>, credentials: Json<Credentials>) -> Status {
     // 1) find the user by email
@@ -18,7 +19,7 @@ pub fn login(cookies: &CookieJar, db: &State<MongoORM>, credentials: Json<Creden
     let found_user = match db.get_user_by_email_full(&credentials.email) {
         Ok(user) => user,
         // 1.2) if not found respond with 404
-        Err(_) => return Status::Unauthorized,
+        Err(_) => return Status::NotFound,
     };
 
     // 2) compare the given and crypted pw
@@ -37,17 +38,23 @@ pub fn login(cookies: &CookieJar, db: &State<MongoORM>, credentials: Json<Creden
     // can be set via MongDB Compass add TTL propertie for secnds to live
 
     // 4) on success create and set the cookie.
-    // 4.1) use the base64 encoded session id as the session key
-    let cookie = Cookie::build(
-        SESSION_COOKIE_NAME,
-        "encoded_session_key_from_new_session_id",
-    )
-    .max_age(Duration::seconds(SESSION_COOKIE_LIFE_TIME_SECONDS))
-    .secure(true)
-    .same_site(SameSite::Strict)
-    .http_only(true)
-    .finish();
+    let hash = random_string(12);
+    match db.create_user_session(&found_user.id.unwrap(), &hash) {
+        Ok(_) => (),
+        Err(_) => return Status::InternalServerError,
+    };
+
+    // 4.1) use the base64 encoded session hash as the session key
+    let value = encode(hash);
+
+    let cookie = Cookie::build(SESSION_COOKIE_NAME, value)
+        .max_age(Duration::seconds(SESSION_COOKIE_LIFE_TIME_SECONDS))
+        .secure(true)
+        .same_site(SameSite::Strict)
+        .http_only(true)
+        .finish();
     cookies.add(cookie);
+
     Status::Accepted
 }
 

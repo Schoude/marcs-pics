@@ -61,9 +61,11 @@ dependencies = [
 name = "api"
 version = "0.1.0"
 dependencies = [
+ "base64",
  "bcrypt",
  "dotenv",
  "mongodb",
+ "rand",
  "rocket",
  "serde",
  "serde_json",

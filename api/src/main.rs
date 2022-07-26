@@ -1,6 +1,7 @@
 mod db;
 mod handlers;
 mod models;
+mod utils;
 
 #[macro_use]
 extern crate rocket;
