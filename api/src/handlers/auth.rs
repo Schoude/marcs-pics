@@ -1,19 +1,38 @@
+use crate::{db::mongodb::MongoORM, models::auth::Credentials};
+use bcrypt::verify;
 use rocket::{
     http::{Cookie, CookieJar, SameSite, Status},
+    serde::json::Json,
     time::Duration,
+    State,
 };
 
 const SESSION_COOKIE_LIFE_TIME_SECONDS: i64 = 600;
 const SESSION_COOKIE_NAME: &str = "m_p_session";
 
 /// Checks the Users's credentials and on success sets a session cookie.
-#[post("/login")]
-// TODO: add json field with the login credentials
-pub fn login(cookies: &CookieJar) -> Status {
+#[post("/login", format = "json", data = "<credentials>")]
+pub fn login(cookies: &CookieJar, db: &State<MongoORM>, credentials: Json<Credentials>) -> Status {
     // 1) find the user by email
-    // 1.2) if not found respond with 404
+    // credentials.
+    let found_user = match db.get_user_by_email_full(&credentials.email) {
+        Ok(user) => user,
+        // 1.2) if not found respond with 404
+        Err(_) => return Status::Unauthorized,
+    };
+
     // 2) compare the given and crypted pw
-    // 2.1) if invalid respond with 401
+    let res = match verify(credentials.password.to_owned(), &found_user.password) {
+        Ok(r) => r,
+        // 2.1) if invalid respond with 401
+        Err(_) => return Status::Unauthorized,
+    };
+
+    if res == false {
+        return Status::Unauthorized;
+    }
+
+
     // 3) save a session in DB with the authorized user data (nickname, email, role)
     // set an index for created_at (BSON date time is ok) with expireAfterSeconds: SESSION_COOKIE_LIFE_TIME
     // can be set via MongDB Compass add TTL propertie for secnds to live
@@ -27,6 +46,7 @@ pub fn login(cookies: &CookieJar) -> Status {
     .max_age(Duration::seconds(SESSION_COOKIE_LIFE_TIME_SECONDS))
     .secure(true)
     .same_site(SameSite::Strict)
+    .http_only(true)
     .finish();
     cookies.add(cookie);
     Status::Accepted

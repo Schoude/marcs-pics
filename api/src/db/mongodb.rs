@@ -98,6 +98,17 @@ impl MongoORM {
         Ok(found_user)
     }
 
+    /// Returns a single user _(including the hashed password)_ identified by the its email address.
+    pub fn get_user_by_email_full(&self, email: &String) -> Result<User, Error> {
+        let filter = doc! { "email": email };
+        let found_user = self
+            .user_collection
+            .find_one(filter, None)
+            .expect("Error getting the user ")
+            .unwrap();
+        Ok(found_user)
+    }
+
     /// Updates a Users `nickname` or `email` and returns the modified User.
     pub fn update_nickname_or_email(
         &self,

@@ -1,10 +1,10 @@
 ### Log in and get a user session.
 POST http://localhost:8000/api/login
-Content-Type: application/application/json
+Content-Type: application/json
 
 {
-  "email": "sadsf@ada.de",
-  "password": "adadasd"
+  "email": "cool@hool.me",
+  "password": "crypt-me"
 }
 
 ### Log out and remove the session.

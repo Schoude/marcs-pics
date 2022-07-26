@@ -27,18 +27,29 @@
 </body>
 
 <script>
-  // naive redirect to overview page if user already has a session cookie.
-  if (document.cookie.includes('m_p_session')) {
-    window.location.pathname = '/';
-  }
+  const emailEl = document.querySelector('input[type="email"]');
+  const passwordEl = document.querySelector('input[type="password"]');
+
+  // make request to /api/me. If not 401 -> redirect to overview page.
 
   async function onSubmit(e) {
     e.preventDefault();
 
-    const res = await fetch('/api/login', { method: 'POST' });
+    const credentials = {
+      email: emailEl.value,
+      password: passwordEl.value,
+    };
+
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      body: JSON.stringify(credentials),
+      headers: { 'Content-Type': 'application/json' }
+    });
     console.log(res.status);
     if (res.status === 202) {
-      setTimeout(() => window.location.pathname = ('/'), 3000);
+      window.location.pathname = ('/');
+    } else {
+      console.log('show error');
     }
   }
 
