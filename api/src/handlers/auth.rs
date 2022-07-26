@@ -22,16 +22,15 @@ pub fn login(cookies: &CookieJar, db: &State<MongoORM>, credentials: Json<Creden
     };
 
     // 2) compare the given and crypted pw
-    let res = match verify(credentials.password.to_owned(), &found_user.password) {
+    let res = match verify(&credentials.password, &found_user.password) {
         Ok(r) => r,
         // 2.1) if invalid respond with 401
         Err(_) => return Status::Unauthorized,
     };
 
-    if res == false {
+    if !res {
         return Status::Unauthorized;
     }
-
 
     // 3) save a session in DB with the authorized user data (nickname, email, role)
     // set an index for created_at (BSON date time is ok) with expireAfterSeconds: SESSION_COOKIE_LIFE_TIME
