@@ -1,4 +1,4 @@
-use mongodb::bson::oid::ObjectId;
+use mongodb::bson::{oid::ObjectId, DateTime};
 use serde::{Deserialize, Serialize};
 
 /// Credentials that the user has to send with the `POST` request to `/api/login`.
@@ -11,8 +11,8 @@ pub struct Credentials {
 /// MongoDB schema for a User auth session.
 #[derive(Serialize)]
 pub struct UserSession {
-    #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
-    pub id: Option<ObjectId>,
+    pub _id: ObjectId,
     pub user_id: ObjectId,
     pub hash: String,
+    pub created_at: DateTime,
 }

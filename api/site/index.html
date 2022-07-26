@@ -11,8 +11,11 @@
 
 <body>
   <header>
-    <nav><a href="/new-photo-box">Neue Fotobox erstellen</a></nav>
-    <nav><a href="/new-collection">Neue Kollektion erstellen</a></nav>
+    <nav>
+      <a href="/new-photo-box">Neue Fotobox erstellen</a>
+      <a href="/new-collection">Neue Kollektion erstellen</a>
+      <button type="button">Ausloggen</button>
+    </nav>
   </header>
   <h1>Übersicht</h1>
   <h2>Übersicht deiner Fotoboxen</h2>
@@ -20,11 +23,24 @@
 </body>
 
 <script type="module">
+  const btnLogout = document.querySelector('button');
   const res = await fetch('/api/me');
   console.log(res.status);
   if (res.status === 401) {
     window.location.pathname = '/login';
   }
+
+  async function onLogout() {
+    const res = await fetch('/api/logout', { method: 'POST' });
+    console.log(res.status);
+
+    if (res.status === 202) {
+      window.location.pathname = '/login';
+    }
+  }
+
+  btnLogout.addEventListener('click', onLogout);
+
 </script>
 
 </html>

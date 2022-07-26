@@ -1,5 +1,5 @@
 use crate::{db::mongodb::MongoORM, models::auth::Credentials, utils::random_string};
-use base64::encode;
+use base64::{decode, encode};
 use bcrypt::verify;
 use rocket::{
     http::{Cookie, CookieJar, SameSite, Status},
@@ -7,6 +7,7 @@ use rocket::{
     time::Duration,
     State,
 };
+use std::str;
 
 const SESSION_COOKIE_LIFE_TIME_SECONDS: i64 = 600;
 const SESSION_COOKIE_NAME: &str = "m_p_session";
@@ -60,12 +61,31 @@ pub fn login(cookies: &CookieJar, db: &State<MongoORM>, credentials: Json<Creden
 
 /// Logs the user out by removing the session cookie and deleting the session entry in the database.
 #[post("/logout")]
-pub fn logout(cookies: &CookieJar) -> Status {
-    // 1) remove session cookie
+pub fn logout(cookies: &CookieJar, db: &State<MongoORM>) -> Status {
+    // 1) try to get the cookie to remove the session in database matching on its hash;
+    let cookie = match cookies.get(SESSION_COOKIE_NAME) {
+        Some(c) => c,
+        None => {
+            println!("no cookie found");
+            return Status::Unauthorized;
+        }
+    };
+
+    // 1.1) remove session cookie
     cookies.remove(Cookie::named(SESSION_COOKIE_NAME));
 
     // 2) delete session from DB
-    Status::Accepted
+    let hash = cookie.value();
+    let bytes = match decode(hash) {
+        Ok(res) => res,
+        Err(_) => return Status::InternalServerError,
+    };
+    let decoded_hash = str::from_utf8(&bytes).unwrap();
+
+    match db.delete_user_session_by_hash(decoded_hash) {
+        Ok(_) => Status::Accepted,
+        Err(_) => Status::InternalServerError,
+    }
 }
 
 /// Returns UserFound if both a session cookie and a session in the database are present.

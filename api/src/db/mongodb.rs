@@ -224,10 +224,12 @@ impl MongoORM {
         user_id: &ObjectId,
         hash: &String,
     ) -> Result<InsertOneResult, Error> {
+        let oid = ObjectId::new();
         let session = UserSession {
-            id: None,
+            _id: oid,
             user_id: *user_id,
             hash: hash.to_string(),
+            created_at: oid.timestamp(),
         };
 
         let insert_result = self
@@ -235,5 +237,14 @@ impl MongoORM {
             .insert_one(session, None)
             .expect("Error creating the user session.");
         Ok(insert_result)
+    }
+
+    /// Deletes the user session with the given hash.
+    pub fn delete_user_session_by_hash(&self, hash: &str) -> Result<DeleteResult, Error> {
+        let delete_result = self
+            .user_sessions_collection
+            .delete_one(doc! {"hash": hash}, None)
+            .expect("Error deleting the user session.");
+        Ok(delete_result)
     }
 }
