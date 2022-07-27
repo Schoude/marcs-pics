@@ -49,3 +49,14 @@ pub struct UserUpdate {
     pub nickname: String,
     pub email: String,
 }
+
+/// Gets returned as the auhorized user.
+/// Also has the firebase config attached.
+#[derive(Serialize, Deserialize)]
+pub struct UserAuth {
+    pub _id: ObjectId,
+    pub nickname: String,
+    pub email: String,
+    pub role: UserRole,
+    pub firebase_config: String,
+}

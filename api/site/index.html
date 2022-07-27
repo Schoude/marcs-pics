@@ -13,18 +13,25 @@
   <header>
     <nav>
       <a href="/new-photo-box">Neue Fotobox erstellen</a>
-      <a href="/new-collection">Neue Kollektion erstellen</a>
       <button type="button">Ausloggen</button>
     </nav>
   </header>
   <h1>Übersicht</h1>
-  <h2>Deine Fotoboxen</h2>
-  <h2>Deine Kollektionen</h2>
+
+  <section class="boxes">
+    <h2>Deine Fotoboxen</h2>
+  </section>
+
+  <section class="collections">
+    <h2>Deine Kollektionen</h2>
+  </section>
 </body>
 
 <script type="module">
   const btnLogout = document.querySelector('button');
   const res = await fetch('/api/me');
+  const boxesEl = document.querySelector('.boxes');
+  const collectionsEl = document.querySelector('.collections');
 
   if (res.status === 401) {
     window.location.pathname = '/login';
@@ -32,14 +39,49 @@
 
   async function onLogout() {
     const res = await fetch('/api/logout', { method: 'POST' });
+    res.headers.get("x-firebase-config");
 
     if (res.status === 202) {
       window.location.pathname = '/login';
     }
   }
 
+  async function fetchPhotoBoxes() {
+    const boxes = await (await fetch('/api/photo-boxes')).json();
+    boxes.forEach(box => {
+      const boxEl = document.createElement('article');
+      const name = document.createElement('h3');
+      const desc = document.createElement('p');
+      name.innerText = box.display_name;
+      desc.innerText = box.description;
+
+      // tags
+      const tagEls = box.tags.map(tag => {
+        const tagEl = document.createElement('li');
+        tagEl.classList.add('tag');
+        tagEl.innerText = tag;
+
+        return tagEl;
+      });
+      const tagsContainerEl = document.createElement('ul');
+      tagEls.forEach(tagEl => tagsContainerEl.appendChild(tagEl));
+
+      // link to create new collection from this photo box.
+      const linkEl = document.createElement('a');
+      linkEl.href = `/new-collection?root=${box.firebase_root_folder_name}&folder=${box.firebase_folder_name}`;
+      linkEl.innerText = 'Neue Kollektion aus dieser Fotobox erstellen';
+
+      boxEl.appendChild(name);
+      boxEl.appendChild(desc);
+      boxesEl.appendChild(boxEl);
+      boxesEl.appendChild(tagsContainerEl);
+      boxesEl.appendChild(linkEl);
+    });
+  }
+
   btnLogout.addEventListener('click', onLogout);
 
+  fetchPhotoBoxes();
 </script>
 
 </html>

@@ -20,6 +20,49 @@
     if (res.status !== 200) {
       window.location.pathname = '/login';
     }
+
+    // get firebase config from authorized user
+    const firebaseConfig = JSON.parse(atob((await res.json()).firebase_config));
+
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.9.1/firebase-app.js";
+    import { getStorage, listAll, ref, getDownloadURL, getBlob } from "https://www.gstatic.com/firebasejs/9.9.1/firebase-storage.js";
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const storage = getStorage(app);
+
+    // get ref parts from url
+    const queries = new URLSearchParams(window.location.search);
+    const root = queries.get('root');
+    const folder = queries.get('folder');
+
+    if (root == null || folder == null) {
+      throw new Error("You need to give the url query paramter 'root' and 'folder' the list the photo box.")
+    }
+
+    const listRef = ref(storage, `${queries.get('root')}/${queries.get('folder')}`);
+    const urls = [];
+
+    // Find all the prefixes and items.
+    listAll(listRef)
+      .then(async (res) => {
+        if (res.items.length === 0) {
+          throw new Error('The photobox your are trying to list does not exist.');
+        }
+
+        res.items.forEach(async (itemRef) => {
+          const url = await getDownloadURL(itemRef);
+          urls.push(url);
+
+          // app url needs to be in a whitelist on Firebase
+          // to use getBlob()
+          // const blob = await getBlob(itemRef);
+          // console.log(blob);
+        });
+      })
+      .catch((error) => {
+        throw new Error('The photobox your are trying to list does not exist.');
+      });
   </script>
 </body>
 

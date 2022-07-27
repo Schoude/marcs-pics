@@ -1,17 +1,18 @@
 use crate::{
     db::mongodb::MongoORM,
-    models::{auth::Credentials, user::UserFound},
+    models::{auth::Credentials, user::UserAuth},
     utils::random_string,
 };
 use base64::{decode, encode};
 use bcrypt::verify;
+use dotenv::dotenv;
 use rocket::{
     http::{Cookie, CookieJar, SameSite, Status},
     serde::json::Json,
     time::Duration,
     State,
 };
-use std::str;
+use std::{env, str};
 
 const SESSION_COOKIE_LIFE_TIME_SECONDS: i64 = 600;
 pub const SESSION_COOKIE_NAME: &str = "m_p_session";
@@ -92,10 +93,10 @@ pub fn logout(cookies: &CookieJar, db: &State<MongoORM>) -> Status {
     }
 }
 
-/// Returns UserFound if both a session cookie and a session in the database are present.
+/// Returns UserAuth if both a session cookie and a session in the database are present.
 #[get("/me")]
 // actually should return Result<(Json(UserFound), Status), Status>
-pub fn me(cookies: &CookieJar, db: &State<MongoORM>) -> Result<(Status, Json<UserFound>), Status> {
+pub fn me(cookies: &CookieJar, db: &State<MongoORM>) -> Result<(Status, Json<UserAuth>), Status> {
     // 1) try to get the cookie
     let cookie = match cookies.get(SESSION_COOKIE_NAME) {
         Some(c) => c,
@@ -118,8 +119,26 @@ pub fn me(cookies: &CookieJar, db: &State<MongoORM>) -> Result<(Status, Json<Use
     };
 
     let found_user = db.get_user_by_id(&found_session.user_id.to_string());
-    match found_user {
-        Ok(user) => Ok((Status::Ok, Json(user))),
-        Err(_) => Err(Status::InternalServerError),
-    }
+
+    let user = match found_user {
+        Ok(user) => user,
+        Err(_) => return Err(Status::InternalServerError),
+    };
+
+    // 3) attach the encoded firebase config.
+    dotenv().ok();
+    let config = match env::var("FIREBASE_CONFIG") {
+        Ok(val) => val,
+        Err(e) => format!("Error loading the env variable: {e}"),
+    };
+
+    let user_auth = UserAuth {
+        _id: user._id,
+        email: user.email,
+        nickname: user.nickname,
+        role: user.role,
+        firebase_config: encode(config),
+    };
+
+    Ok((Status::Ok, Json(user_auth)))
 }
