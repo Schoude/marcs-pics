@@ -1,5 +1,6 @@
 use crate::{
     db::mongodb::MongoORM,
+    guards::has_session::HasSession,
     models::photo_box::{PhotoBox, PhotoBoxCreate, PhotoBoxUpdate},
 };
 use mongodb::{bson::oid::ObjectId, results::InsertOneResult};
@@ -14,6 +15,7 @@ use rocket::{http::Status, serde::json::Json, State};
 #[post("/photo-box", format = "json", data = "<new_photo_box>")]
 pub fn add_photo_box(
     db: &State<MongoORM>,
+    _has_session: HasSession,
     new_photo_box: Json<PhotoBoxCreate>,
 ) -> Result<(Status, Json<InsertOneResult>), Status> {
     let _id = ObjectId::new();
@@ -39,6 +41,7 @@ pub fn add_photo_box(
 #[put("/photo-box/<id>", data = "<photo_box_update>")]
 pub fn update_photo_box(
     db: &State<MongoORM>,
+    _has_session: HasSession,
     id: String,
     photo_box_update: Json<PhotoBoxCreate>,
 ) -> Result<(Status, Json<PhotoBox>), Status> {
@@ -76,6 +79,7 @@ pub fn update_photo_box(
 pub fn get_photo_box_by_id(
     db: &State<MongoORM>,
     id: String,
+    _has_session: HasSession,
 ) -> Result<(Status, Json<PhotoBox>), Status> {
     if id.is_empty() {
         return Err(Status::BadRequest);
@@ -90,7 +94,10 @@ pub fn get_photo_box_by_id(
 
 /// Get all PhotoBoxes.
 #[get("/photo-boxes")]
-pub fn get_all_photo_boxes(db: &State<MongoORM>) -> Result<(Status, Json<Vec<PhotoBox>>), Status> {
+pub fn get_all_photo_boxes(
+    db: &State<MongoORM>,
+    _has_session: HasSession,
+) -> Result<(Status, Json<Vec<PhotoBox>>), Status> {
     let photo_boxes = db.get_all_photo_boxes();
     match photo_boxes {
         Ok(photo_boxes) => Ok((Status::Ok, Json(photo_boxes))),

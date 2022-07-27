@@ -1,7 +1,7 @@
 extern crate bcrypt;
-
 use crate::{
     db::mongodb::MongoORM,
+    guards::has_session::HasSession,
     models::user::{User, UserFound, UserUpdate},
 };
 use bcrypt::hash;
@@ -18,6 +18,7 @@ use rocket::{http::Status, serde::json::Json, State};
 #[post("/user", format = "json", data = "<user>")]
 pub fn add_user(
     db: &State<MongoORM>,
+    _has_session: HasSession,
     user: Json<User>,
 ) -> Result<(Status, Json<InsertOneResult>), Status> {
     // Check if user with the email/username already exists
@@ -49,6 +50,7 @@ pub fn add_user(
 #[get("/user/<id>")]
 pub fn get_user_by_id(
     db: &State<MongoORM>,
+    _has_session: HasSession,
     id: String,
 ) -> Result<(Status, Json<UserFound>), Status> {
     if id.is_empty() {
@@ -66,6 +68,7 @@ pub fn get_user_by_id(
 #[put("/user/<id>", data = "<user_update>")]
 pub fn update_nickname_or_email(
     db: &State<MongoORM>,
+    _has_session: HasSession,
     id: String,
     user_update: Json<UserUpdate>,
 ) -> Result<(Status, Json<UserFound>), Status> {
@@ -98,6 +101,7 @@ pub fn update_nickname_or_email(
 #[delete("/user/<id>")]
 pub fn delete_user_by_id(
     db: &State<MongoORM>,
+    _has_session: HasSession,
     id: String,
 ) -> Result<(Status, Json<DeleteResult>), Status> {
     if id.is_empty() {
@@ -118,7 +122,10 @@ pub fn delete_user_by_id(
 
 /// Gets all Users.
 #[get("/users")]
-pub fn get_all_users(db: &State<MongoORM>) -> Result<(Status, Json<Vec<UserFound>>), Status> {
+pub fn get_all_users(
+    db: &State<MongoORM>,
+    _has_session: HasSession,
+) -> Result<(Status, Json<Vec<UserFound>>), Status> {
     let users = db.get_all_users();
     match users {
         Ok(users) => Ok((Status::Ok, Json(users))),

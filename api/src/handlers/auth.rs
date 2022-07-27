@@ -14,7 +14,7 @@ use rocket::{
 use std::str;
 
 const SESSION_COOKIE_LIFE_TIME_SECONDS: i64 = 600;
-const SESSION_COOKIE_NAME: &str = "m_p_session";
+pub const SESSION_COOKIE_NAME: &str = "m_p_session";
 
 /// Checks the Users's credentials, on success sets a session cookie and saves a session in the database.
 #[post("/login", format = "json", data = "<credentials>")]

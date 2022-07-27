@@ -8,7 +8,7 @@ pub fn random_string(length: u16) -> String {
     const CHARSET: &[u8] =
         b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789)(*&^%$#@!~";
 
-    (0..=length)
+    (0..length)
         .map(|_| {
             let idx = rng.gen_range(0..CHARSET.len());
             CHARSET[idx] as char
