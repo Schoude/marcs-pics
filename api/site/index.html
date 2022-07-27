@@ -39,7 +39,6 @@
 
   async function onLogout() {
     const res = await fetch('/api/logout', { method: 'POST' });
-    res.headers.get("x-firebase-config");
 
     if (res.status === 202) {
       window.location.pathname = '/login';
