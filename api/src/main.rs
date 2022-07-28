@@ -8,15 +8,14 @@ mod utils;
 extern crate rocket;
 
 use db::mongodb::MongoORM;
-use handlers::auth::{login, logout, me};
-use handlers::photo_box::{
-    add_photo_box, get_all_photo_boxes, get_photo_box_by_id, update_photo_box,
+use handlers::{
+    auth::{login, logout, me},
+    photo_box::{add_photo_box, get_all_photo_boxes, get_photo_box_by_id, update_photo_box},
+    upload::upload,
+    user::{add_user, delete_user_by_id, get_all_users, get_user_by_id, update_nickname_or_email},
 };
-use handlers::user::{
-    add_user, delete_user_by_id, get_all_users, get_user_by_id, update_nickname_or_email,
-};
-use rocket::fs::{relative, FileServer, NamedFile};
 use rocket::{
+    fs::{relative, FileServer, NamedFile},
     http::Status,
     serde::json::{json, Json, Value},
 };
@@ -86,7 +85,8 @@ fn rocket() -> _ {
                 add_photo_box,
                 get_all_photo_boxes,
                 update_photo_box,
-                get_photo_box_by_id
+                get_photo_box_by_id,
+                upload,
             ],
         )
         .register(API_BASE, catchers!(not_found))
