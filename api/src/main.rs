@@ -1,8 +1,8 @@
 mod db;
+mod guards;
 mod handlers;
 mod models;
 mod utils;
-mod guards;
 
 #[macro_use]
 extern crate rocket;
@@ -44,7 +44,7 @@ fn not_found() -> Value {
 }
 
 /// Redirects all not found routes to the root `index.html`
-#[get("/<_..>", rank = 2)]
+#[get("/<_..>", rank = 3)]
 async fn fallback() -> Option<NamedFile> {
     NamedFile::open(Path::new("site/").join("index.html"))
         .await
@@ -92,6 +92,9 @@ fn rocket() -> _ {
         .register(API_BASE, catchers!(not_found))
         .manage(db)
         .mount("/", FileServer::from(relative!("site")).rank(1))
+        // serves the uploaded files for the photo-boxes
+        .mount("/storage", FileServer::from(relative!("storage")).rank(2))
+        // rank = 3
         .mount("/", routes![fallback])
     // uncomment these lines to have a static files server
     // with SPA fallback for unmatched files that redirect to the root index.html
