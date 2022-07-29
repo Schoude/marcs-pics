@@ -28,8 +28,7 @@ use serde::{Deserialize, Serialize};
 ///     "https://marcs-pics-usa2022.firebase.com/image4",
 ///   ],
 ///
-///   // or get from the "_id" ObjectId instance of available
-///   "created_at": UTC-Date
+///   "created_at": Date
 /// }
 /// ```
 #[derive(Debug, Serialize, Deserialize)]
@@ -41,6 +40,7 @@ pub struct PhotoBox {
     pub display_name: String,
     pub description: String,
     pub tags: Vec<String>,
+    pub urls: Vec<String>,
     pub created_at: DateTime,
 }
 
@@ -54,6 +54,7 @@ pub struct PhotoBoxCreate {
     pub firebase_folder_name: String,
     pub display_name: String,
     pub description: String,
+    pub urls: Vec<String>,
     pub tags: Vec<String>,
 }
 

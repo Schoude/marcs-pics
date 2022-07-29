@@ -25,6 +25,7 @@ Content-Type: application/json
   "firebase_folder_name": "comingsoon2023",
   "display_name": "Korea-Reise 2023",
   "description": "Beschreibung folgt, wenn ich die Reise angetreten habe...",
+  "urls": [],
   "tags": [
     "Korea",
     "food tour",

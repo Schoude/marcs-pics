@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicons/favicon-16x16.png">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="stylesheet" href="/style.css">
+  <title>Fotobox bearbeiten - Marc's Pics</title>
+</head>
+
+<body>
+  <header>
+    <nav><a href="/">Übersicht</a></nav>
+  </header>
+  <h1>Fotobox bearbeiten</h1>
+  <script type="module">
+    const res = await fetch('/api/me');
+    if (res.status !== 200) {
+      window.location.pathname = '/login';
+    }
+
+
+    const queries = new URLSearchParams(window.location.search);
+    const photoBoxId = queries.get('id');
+
+    const photoBox = await(await fetch(`api/photo-box/${photoBoxId}`))
+  </script>
+</body>
+
+</html>

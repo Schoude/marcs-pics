@@ -7,3 +7,7 @@ body {
 a {
   color: white;
 }
+
+fieldset {
+  border: none;
+}

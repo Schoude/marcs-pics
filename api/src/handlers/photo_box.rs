@@ -26,6 +26,7 @@ pub fn add_photo_box(
         firebase_folder_name: new_photo_box.firebase_folder_name.to_owned(),
         display_name: new_photo_box.display_name.to_owned(),
         description: new_photo_box.description.to_owned(),
+        urls: new_photo_box.urls.to_owned(),
         tags: new_photo_box.tags.to_owned(),
         created_at: _id.timestamp(),
     };
@@ -54,6 +55,7 @@ pub fn update_photo_box(
         firebase_folder_name: photo_box_update.firebase_folder_name.to_owned(),
         display_name: photo_box_update.display_name.to_owned(),
         description: photo_box_update.description.to_owned(),
+        urls: photo_box_update.urls.to_owned(),
         tags: photo_box_update.tags.to_owned(),
     };
 
