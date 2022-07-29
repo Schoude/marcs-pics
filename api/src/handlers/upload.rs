@@ -8,11 +8,9 @@ const UPLOAD_BASE: &str = "./storage";
 pub struct Upload<'r> {
     dest_folder: String,
     test: TempFile<'r>,
-    // files: Vec<TempFile<'r>>,
 }
 
 // TODO: clean up unwrap and expect
-// TODO: try uploading multiple files at ones with Vec<TempFile<'r>>
 #[post("/upload-image", data = "<upload>")]
 pub async fn upload_image(mut upload: Form<Upload<'_>>) -> std::io::Result<()> {
     let file_name = Uuid::new_v4();

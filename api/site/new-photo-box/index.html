@@ -17,12 +17,124 @@
     <nav><a href="/">Übersicht</a></nav>
   </header>
   <h1>Neue Fotobox erstellen</h1>
+  <p><i>Nachdem die Fotobox erstellt wurde, kannst du Fotos hochladen.</i></p>
+  <form id="photo-box">
+    <fieldset>
+      <label>
+        Name des Ordners
+        <input required type="text" name="firebase_folder_name" id="firebase_folder_name">
+      </label>
+    </fieldset>
+
+    <fieldset>
+      <label>
+        Anzeigename
+        <input required type="text" name="display_name" id="display_name">
+      </label>
+      <label>
+        Beschreibung
+        <textarea required name="description" id="description"></textarea>
+      </label>
+    </fieldset>
+
+  </form>
+
+  <fieldset>
+    <label>
+      Tags
+      <input type="text" id="tag">
+    </label>
+  </fieldset>
+
+  <button id="btn-submit" form="photo-box">Speichern</button>
+  <section>
+    <h2>Tags</h2>
+    <ul class="tags-container"></ul>
+  </section>
 
   <script type="module">
     const res = await fetch('/api/me');
     if (res.status !== 200) {
       window.location.pathname = '/login';
     }
+    const me = await res.json();
+
+    const formEl = document.querySelector('form');
+    const tagInput = document.querySelector('#tag');
+    const btnSubmitEl = document.querySelector('#btn-submit');
+    const container = document.querySelector('.tags-container');
+    let requestLoading = false;
+
+    const firebase_root_folder_name = 'storage';
+    let tags = [];
+    const payloadInit = {
+      owner_id: me._id.$oid,
+      firebase_root_folder_name,
+      firebase_folder_name: '',
+      display_name: '',
+      description: '',
+      tags: [],
+    };
+    let payload = payloadInit;
+
+    function renderTags(tagsArr) {
+      container.innerHTML = '';
+
+      tagsArr.forEach(tag => {
+        const tagEl = document.createElement('li');
+        tagEl.innerText = tag;
+        container.appendChild(tagEl);
+      });
+    }
+
+    function addTag(event) {
+      event.stopImmediatePropagation();
+
+      if (event.key === 'Enter') {
+        tags.push(event.target.value);
+        event.target.value = '';
+        renderTags(tags);
+      }
+    }
+
+    async function onSubmit(event) {
+      if (requestLoading) {
+        return
+      }
+      event.preventDefault();
+      let data = new FormData(formEl);
+      [...data.entries()].forEach(([key, value]) => {
+        payload[key] = value;
+      });
+
+      payload.tags = tags;
+
+      try {
+        requestLoading = true;
+        const res = await fetch('/api/photo-box', {
+          method: 'POST',
+          body: JSON.stringify(payload),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (res.status === 201) {
+          window.location.pathname = '/';
+        }
+      } catch (e) {
+        btnSubmitEl.removeAttribute('disabled');
+        requestLoading = false;
+        payload = payloadInit;
+        formEl.reset();
+        tags = [];
+        renderTags(tags);
+        throw new Error(e.message);
+      }
+    }
+
+    tagInput.addEventListener('keyup', addTag);
+    formEl.addEventListener('submit', onSubmit);
   </script>
 </body>
 
