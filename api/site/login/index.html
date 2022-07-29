@@ -27,12 +27,6 @@
     </fieldset>
     <button>Anmelden</button>
   </form>
-
-  <form id="form-file" name="form-file">
-    <input type="text" name="dest_folder" id="dest_folder">
-    <input type="file" name="test" id="test">
-    <button form="form-file">Upload</button>
-  </form>
 </body>
 
 <script type="module">
@@ -43,10 +37,6 @@
 
   const emailEl = document.querySelector('input[type="email"]');
   const passwordEl = document.querySelector('input[type="password"]');
-  const fileInputEl = document.querySelector('input[type="file"]');
-  const destInputEl = document.querySelector('input[type="text"]');
-
-  // make request to /api/me. If not 401 -> redirect to overview page.
 
   async function onSubmit(e) {
     e.preventDefault();
@@ -69,18 +59,7 @@
     }
   }
 
-  async function onUpload(e) {
-    e.preventDefault();
-
-    const file = e.target.querySelector('input[type="file"]').files[0];
-    const formData = new FormData();
-    formData.append("dest_folder", destInputEl.value);
-    formData.append("test", file);
-
-    fetch('/api/upload', { method: "POST", body: formData });
-  }
-
-  document.querySelector('#form-file').addEventListener('submit', onUpload);
+  document.querySelector('form').addEventListener('submit', onSubmit);
 </script>
 
 </html>
