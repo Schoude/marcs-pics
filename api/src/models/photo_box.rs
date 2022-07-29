@@ -20,7 +20,7 @@ use serde::{Deserialize, Serialize};
 ///
 ///   // plain urls of all the images of the photo_box - the ordering is arbitrary
 ///   // MAY NOT BE NEEDED. THE ROOT AND FOLDER NAME OF FIREBASE RETURN THESE URLS
-///   "photo_urls": [
+///   "urls": [
 ///     "https://marcs-pics-usa2022.firebase.com/image1",
 ///     "https://marcs-pics-usa2022.firebase.com/image2",
 ///     "https://marcs-pics-usa2022.firebase.com/image3",
@@ -65,5 +65,6 @@ pub struct PhotoBoxUpdate {
     pub firebase_folder_name: String,
     pub display_name: String,
     pub description: String,
+    pub urls: Vec<String>,
     pub tags: Vec<String>,
 }
