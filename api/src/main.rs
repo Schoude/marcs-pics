@@ -11,7 +11,7 @@ use db::mongodb::MongoORM;
 use handlers::{
     auth::{login, logout, me},
     photo_box::{add_photo_box, get_all_photo_boxes, get_photo_box_by_id, update_photo_box},
-    upload::upload,
+    upload::upload_image,
     user::{add_user, delete_user_by_id, get_all_users, get_user_by_id, update_nickname_or_email},
 };
 use rocket::{
@@ -86,7 +86,7 @@ fn rocket() -> _ {
                 get_all_photo_boxes,
                 update_photo_box,
                 get_photo_box_by_id,
-                upload,
+                upload_image,
             ],
         )
         .register(API_BASE, catchers!(not_found))

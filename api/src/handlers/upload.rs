@@ -13,8 +13,8 @@ pub struct Upload<'r> {
 
 // TODO: clean up unwrap and expect
 // TODO: try uploading multiple files at ones with Vec<TempFile<'r>>
-#[post("/upload", data = "<upload>")]
-pub async fn upload(mut upload: Form<Upload<'_>>) -> std::io::Result<()> {
+#[post("/upload-image", data = "<upload>")]
+pub async fn upload_image(mut upload: Form<Upload<'_>>) -> std::io::Result<()> {
     let file_name = Uuid::new_v4();
     let dir_path = format!("{}/{}/", UPLOAD_BASE, &upload.dest_folder);
     let dest_exists = Path::new(&dir_path).is_dir();
