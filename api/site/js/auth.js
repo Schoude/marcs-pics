@@ -1,3 +1,10 @@
+async function logoutUser() {
+  const res = await fetch('/api/logout', { method: 'POST' });
+  if (res.status === 202) {
+    window.location.pathname = '/login';
+  }
+}
+
 async function checkAuth() {
   const res = await fetch('/api/me');
   if (res.status === 401) {
@@ -14,6 +21,7 @@ async function checkAuthLoginPage() {
 }
 
 export {
+  logoutUser,
   checkAuth,
   checkAuthLoginPage,
 }

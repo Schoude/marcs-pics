@@ -31,7 +31,7 @@
 </body>
 
 <script type="module">
-  import { checkAuth } from '/js/auth.js';
+  import { checkAuth, logoutUser } from '/js/auth.js';
   await checkAuth();
 
   const btnLogout = document.querySelector('button');
@@ -39,11 +39,7 @@
   const collectionsEl = document.querySelector('.collections');
 
   async function onLogout() {
-    const res = await fetch('/api/logout', { method: 'POST' });
-
-    if (res.status === 202) {
-      window.location.pathname = '/login';
-    }
+    await logoutUser();
   }
 
   async function fetchPhotoBoxes() {
