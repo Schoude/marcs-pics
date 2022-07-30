@@ -30,10 +30,8 @@
 </body>
 
 <script type="module">
-  const res = await fetch('/api/me');
-  if (res.status === 200) {
-    window.location.pathname = '/';
-  }
+  import {checkAuthLoginPage} from '/js/auth.js';
+  await checkAuthLoginPage();
 
   const emailEl = document.querySelector('input[type="email"]');
   const passwordEl = document.querySelector('input[type="password"]');

@@ -53,11 +53,9 @@
   </section>
 
   <script type="module">
-    const res = await fetch('/api/me');
-    if (res.status !== 200) {
-      window.location.pathname = '/login';
-    }
-    const me = await res.json();
+    import { checkAuth } from '/js/auth.js';
+    const me = await checkAuth();
+    console.log(me);
 
     const formEl = document.querySelector('form');
     const tagInput = document.querySelector('#tag');

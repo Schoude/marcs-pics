@@ -19,10 +19,8 @@
   <h1>Neue Kollektion erstellen</h1>
 
   <script type="module">
-    const res = await fetch('/api/me');
-    if (res.status !== 200) {
-      window.location.pathname = '/login';
-    }
+    import { checkAuth } from '/js/auth.js';
+    await checkAuth();
 
     // get firebase config from authorized user
     const firebaseConfig = JSON.parse(atob((await res.json()).firebase_config));

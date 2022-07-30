@@ -31,14 +31,12 @@
 </body>
 
 <script type="module">
+  import { checkAuth } from '/js/auth.js';
+  await checkAuth();
+
   const btnLogout = document.querySelector('button');
-  const res = await fetch('/api/me');
   const boxesEl = document.querySelector('.boxes');
   const collectionsEl = document.querySelector('.collections');
-
-  if (res.status === 401) {
-    window.location.pathname = '/login';
-  }
 
   async function onLogout() {
     const res = await fetch('/api/logout', { method: 'POST' });

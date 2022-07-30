@@ -18,16 +18,13 @@
   </header>
   <h1>Fotobox bearbeiten</h1>
   <script type="module">
-    const res = await fetch('/api/me');
-    if (res.status !== 200) {
-      window.location.pathname = '/login';
-    }
-
+    import { checkAuth } from '/js/auth.js';
+    await checkAuth();
 
     const queries = new URLSearchParams(window.location.search);
     const photoBoxId = queries.get('id');
 
-    const photoBox = await(await fetch(`api/photo-box/${photoBoxId}`))
+    const photoBox = await (await fetch(`api/photo-box/${photoBoxId}`))
   </script>
 </body>
 
