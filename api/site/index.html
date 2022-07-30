@@ -9,27 +9,43 @@
   <meta name="msapplication-TileColor" content="#ffffff">
   <meta name="theme-color" content="#ffffff">
   <link rel="stylesheet" href="/style.css">
+  <style>
+    main {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      column-gap: 1.5rem;
+    }
+
+    .boxes-container a {
+      display: block;
+      margin-block-end: 1.5rem;
+    }
+
+  </style>
   <title>Übersicht - Marc's Pics</title>
 </head>
 
 <body>
   <header>
     <nav>
-      <a href="/new-photo-box">Neue Fotobox erstellen</a>
       <button type="button">Ausloggen</button>
     </nav>
   </header>
   <h1>Übersicht</h1>
 
-  <section class="boxes-container">
-    <h2>Deine Fotoboxen</h2>
-    <div class="boxes"></div>
-  </section>
-
-  <section class="collections-container">
-    <h2>Deine Kollektionen</h2>
-    <div class="collections"></div>
-  </section>
+  <main>
+    <section class="boxes-container">
+      <h2>Deine Fotoboxen</h2>
+      <a href="/new-photo-box">Neue Fotobox erstellen</a>
+      <div class="boxes"></div>
+    </section>
+    <section class="collections-container">
+      <h2>Deine Kollektionen</h2>
+      <div class="collections">
+        <p>Du hast noch keine Kollektionen erstellt..!</p>
+      </div>
+    </section>
+  </main>
 </body>
 
 <script type="module">
@@ -50,6 +66,7 @@
 
     boxes.forEach(box => {
       const boxEl = document.createElement('article');
+      boxEl.classList.add('photo-box');
       const name = document.createElement('h3');
       const desc = document.createElement('p');
       name.innerText = box.display_name;

@@ -6,23 +6,25 @@ body {
   font-family: 'Urbanist', sans-serif;
 }
 
-.boxes {
-  display: flex;
-  flex-wrap: wrap;
+.boxes,
+.collections {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 1.5rem;
 }
 
-article {
+.photo-box,
+.collection {
   border-radius: 4px;
   background-color: #1f3333;
   transition: background-color 300ms ease;
   padding-inline: 1rem;
   padding-block-end: .5rem;
-  min-block-size: 260px;
   box-shadow: 0 4px 4px -2px rgba(0, 0, 0, 0.35), 0 4px 6px -2px rgba(0, 0, 0, 0.25);
 }
 
-article:hover {
+.photo-box:hover,
+.collection:hover {
   background-color: #243b3b;
 }
 
