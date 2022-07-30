@@ -88,10 +88,12 @@
     }
 
     function addTag(event) {
-      event.stopImmediatePropagation();
+      if (event.target.value.trim() === '' || tags.includes(event.target.value.trim())) {
+        return;
+      }
 
       if (event.key === 'Enter') {
-        tags.push(event.target.value);
+        tags.push(event.target.value.trim());
         event.target.value = '';
         renderTags(tags);
       }
