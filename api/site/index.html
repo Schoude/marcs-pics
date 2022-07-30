@@ -21,17 +21,20 @@
   </header>
   <h1>Übersicht</h1>
 
-  <section class="boxes">
+  <section class="boxes-container">
     <h2>Deine Fotoboxen</h2>
+    <div class="boxes"></div>
   </section>
 
-  <section class="collections">
+  <section class="collections-container">
     <h2>Deine Kollektionen</h2>
+    <div class="collections"></div>
   </section>
 </body>
 
 <script type="module">
   import { checkAuth, logoutUser } from '/js/auth.js';
+  import { getAllPhotoBoxes } from '/js/photo-box.js';
   await checkAuth();
 
   const btnLogout = document.querySelector('button');
@@ -43,7 +46,8 @@
   }
 
   async function fetchPhotoBoxes() {
-    const boxes = await (await fetch('/api/photo-boxes')).json();
+    const boxes = await getAllPhotoBoxes();
+
     boxes.forEach(box => {
       const boxEl = document.createElement('article');
       const name = document.createElement('h3');
@@ -69,9 +73,10 @@
 
       boxEl.appendChild(name);
       boxEl.appendChild(desc);
+      boxEl.appendChild(tagsContainerEl);
+      boxEl.appendChild(linkEl);
+
       boxesEl.appendChild(boxEl);
-      boxesEl.appendChild(tagsContainerEl);
-      boxesEl.appendChild(linkEl);
     });
   }
 

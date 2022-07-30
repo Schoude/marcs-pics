@@ -55,7 +55,8 @@
   <script type="module">
     import { checkAuth } from '/js/auth.js';
     const me = await checkAuth();
-    console.log(me);
+
+    import { createNewPhotoBox } from '/js/photo-box.js';
 
     const formEl = document.querySelector('form');
     const tagInput = document.querySelector('#tag');
@@ -110,17 +111,7 @@
 
       try {
         requestLoading = true;
-        const res = await fetch('/api/photo-box', {
-          method: 'POST',
-          body: JSON.stringify(payload),
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-
-        if (res.status === 201) {
-          window.location.pathname = '/';
-        }
+        await createNewPhotoBox(payload);
       } catch (e) {
         btnSubmitEl.removeAttribute('disabled');
         requestLoading = false;
