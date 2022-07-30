@@ -30,7 +30,7 @@
 </body>
 
 <script type="module">
-  import {checkAuthLoginPage} from '/js/auth.js';
+  import { checkAuthLoginPage, loginUser } from '/js/auth.js';
   await checkAuthLoginPage();
 
   const emailEl = document.querySelector('input[type="email"]');
@@ -44,17 +44,7 @@
       password: passwordEl.value,
     };
 
-    const res = await fetch('/api/login', {
-      method: 'POST',
-      body: JSON.stringify(credentials),
-      headers: { 'Content-Type': 'application/json' }
-    });
-
-    if (res.status === 202) {
-      window.location.pathname = ('/');
-    } else {
-      console.log('show error');
-    }
+    await loginUser(credentials);
   }
 
   document.querySelector('form').addEventListener('submit', onSubmit);
