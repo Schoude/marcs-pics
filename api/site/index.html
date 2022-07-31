@@ -69,8 +69,11 @@
       boxEl.classList.add('photo-box');
       const name = document.createElement('h3');
       const desc = document.createElement('p');
+      const editLinkEl = document.createElement('a');
       name.innerText = box.display_name;
       desc.innerText = box.description;
+      editLinkEl.innerText = 'Fotobox bearbeiten';
+      editLinkEl.href = `/edit-photo-box?id=${box._id.$oid}`;
 
       // tags
       const tagEls = box.tags.map(tag => {
@@ -85,11 +88,12 @@
 
       // link to create new collection from this photo box.
       const linkEl = document.createElement('a');
-      linkEl.href = `/new-collection?root=${box.firebase_root_folder_name}&folder=${box.firebase_folder_name}`;
+      linkEl.href = `/new-collection?folder=${box.folder_name}`;
       linkEl.innerText = 'Neue Kollektion aus dieser Fotobox erstellen';
 
       boxEl.appendChild(name);
       boxEl.appendChild(desc);
+      boxEl.appendChild(editLinkEl);
       boxEl.appendChild(tagsContainerEl);
       boxEl.appendChild(linkEl);
 
