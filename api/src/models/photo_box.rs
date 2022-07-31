@@ -6,8 +6,7 @@ use serde::{Deserialize, Serialize};
 /// {
 ///   "_id": ObjectId('3032ef76-ac01-4730-b540-a705a2139d18'),
 ///   "owner_id": ObjectId('9a895880-c891-426f-80dc-ed0094a1a455'),
-///   "firebase_root_folder_name": "marcs-pics",
-///   "firebase_folder_name": "usa2022",
+///   "folder_name": "usa2022",
 ///   "display_name": "USA Reise 2022",
 ///   "description": "The photos of my trip to the USA!",
 ///
@@ -35,8 +34,7 @@ use serde::{Deserialize, Serialize};
 pub struct PhotoBox {
     pub _id: ObjectId,
     pub owner_id: ObjectId,
-    pub firebase_root_folder_name: String,
-    pub firebase_folder_name: String,
+    pub folder_name: String,
     pub display_name: String,
     pub description: String,
     pub tags: Vec<String>,
@@ -50,8 +48,7 @@ pub struct PhotoBox {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct PhotoBoxCreate {
     pub owner_id: String,
-    pub firebase_root_folder_name: String,
-    pub firebase_folder_name: String,
+    pub folder_name: String,
     pub display_name: String,
     pub description: String,
     pub urls: Vec<String>,
@@ -61,8 +58,7 @@ pub struct PhotoBoxCreate {
 /// Helper struct that is used to update a PhotoBox.
 #[derive(Debug, Serialize, Deserialize)]
 pub struct PhotoBoxUpdate {
-    pub firebase_root_folder_name: String,
-    pub firebase_folder_name: String,
+    pub folder_name: String,
     pub display_name: String,
     pub description: String,
     pub urls: Vec<String>,

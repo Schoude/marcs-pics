@@ -17,14 +17,50 @@
     <nav><a href="/">Übersicht</a></nav>
   </header>
   <h1>Fotobox bearbeiten</h1>
+  <form id="photo-box">
+    <fieldset>
+      <label>
+        Name des Ordners
+        <input required type="text" name="folder_name" id="folder_name">
+      </label>
+    </fieldset>
+
+    <fieldset>
+      <label>
+        Anzeigename
+        <input required type="text" name="display_name" id="display_name">
+      </label>
+      <label>
+        Beschreibung
+        <textarea required name="description" id="description"></textarea>
+      </label>
+    </fieldset>
+
+  </form>
+
+  <fieldset>
+    <label>
+      Tags
+      <input type="text" id="tag">
+    </label>
+  </fieldset>
+
+  <button id="btn-submit" form="photo-box">Speichern</button>
+  <section>
+    <h2>Tags</h2>
+    <ul class="tags-container"></ul>
+  </section>
+
   <script type="module">
     import { checkAuth } from '/js/auth.js';
+    import { getPhotoBoxById } from '/js/photo-box.js';
     await checkAuth();
 
     const queries = new URLSearchParams(window.location.search);
     const photoBoxId = queries.get('id');
 
-    const photoBox = await (await fetch(`api/photo-box/${photoBoxId}`))
+    const photoBox = getPhotoBoxById(photoBoxId);
+    console.log(photoBox);
   </script>
 </body>
 

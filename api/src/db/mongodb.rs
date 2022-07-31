@@ -204,8 +204,7 @@ impl MongoORM {
         let filter = doc! { "_id": obj_id };
         let update = doc! {
             "$set": {
-                "firebase_root_folder_name": photo_box_update.firebase_root_folder_name,
-                "firebase_folder_name": photo_box_update.firebase_folder_name,
+                "folder_name": photo_box_update.folder_name,
                 "display_name": photo_box_update.display_name,
                 "description": photo_box_update.description,
                 "tags": photo_box_update.tags,

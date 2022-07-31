@@ -22,7 +22,7 @@
     <fieldset>
       <label>
         Name des Ordners
-        <input required type="text" name="firebase_folder_name" id="firebase_folder_name">
+        <input required type="text" name="folder_name" id="folder_name">
       </label>
     </fieldset>
 
@@ -64,12 +64,10 @@
     const container = document.querySelector('.tags-container');
     let requestLoading = false;
 
-    const firebase_root_folder_name = 'storage';
     let tags = [];
     const payloadInit = {
       owner_id: me._id.$oid,
-      firebase_root_folder_name,
-      firebase_folder_name: '',
+      folder_name: '',
       display_name: '',
       description: '',
       urls: [],
@@ -106,7 +104,7 @@
       event.preventDefault();
       let data = new FormData(formEl);
       [...data.entries()].forEach(([key, value]) => {
-        payload[key] = value;
+        payload[key] = value.trim();
       });
 
       payload.tags = tags;
