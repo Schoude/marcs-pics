@@ -80,6 +80,7 @@
 
       tagsArr.forEach(tag => {
         const tagEl = document.createElement('li');
+        tagEl.classList.add('tag');
         tagEl.innerText = tag;
         container.appendChild(tagEl);
       });
