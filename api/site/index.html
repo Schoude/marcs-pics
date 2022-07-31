@@ -9,6 +9,7 @@
   <meta name="msapplication-TileColor" content="#ffffff">
   <meta name="theme-color" content="#ffffff">
   <link rel="stylesheet" href="/style.css">
+  <script defer type="module" src="/js/components/index.js"></script>
   <style>
     main {
       display: grid;
@@ -37,7 +38,7 @@
     <section class="boxes-container">
       <h2>Deine Fotoboxen</h2>
       <a href="/new-photo-box">Neue Fotobox erstellen</a>
-      <div class="boxes"></div>
+      <mp-details-list></mp-details-list>
     </section>
     <section class="collections-container">
       <h2>Deine Kollektionen</h2>
@@ -54,57 +55,14 @@
   await checkAuth();
 
   const btnLogout = document.querySelector('button');
-  const boxesEl = document.querySelector('.boxes');
-  const collectionsEl = document.querySelector('.collections');
+  const mpDetailsList = document.querySelector('mp-details-list');
 
   async function onLogout() {
     await logoutUser();
   }
-
-  async function fetchPhotoBoxes() {
-    const boxes = await getAllPhotoBoxes();
-
-    boxes.forEach(box => {
-      const boxEl = document.createElement('article');
-      boxEl.classList.add('photo-box');
-      const name = document.createElement('h3');
-      const desc = document.createElement('p');
-      const editLinkEl = document.createElement('a');
-      name.innerText = box.display_name;
-      desc.innerText = box.description;
-      editLinkEl.innerText = 'Fotobox bearbeiten';
-      editLinkEl.href = `/edit-photo-box?id=${box._id.$oid}`;
-
-      // tags
-      const tagEls = box.tags.map(tag => {
-        const tagEl = document.createElement('li');
-        tagEl.classList.add('tag');
-        tagEl.innerText = tag;
-
-        return tagEl;
-      });
-      const tagsContainerEl = document.createElement('ul');
-      tagsContainerEl.classList.add('tags-container');
-      tagEls.forEach(tagEl => tagsContainerEl.appendChild(tagEl));
-
-      // link to create new collection from this photo box.
-      const linkEl = document.createElement('a');
-      linkEl.href = `/new-collection?folder=${box.folder_name}`;
-      linkEl.innerText = 'Neue Kollektion aus dieser Fotobox erstellen';
-
-      boxEl.appendChild(name);
-      boxEl.appendChild(desc);
-      boxEl.appendChild(editLinkEl);
-      boxEl.appendChild(tagsContainerEl);
-      boxEl.appendChild(linkEl);
-
-      boxesEl.appendChild(boxEl);
-    });
-  }
-
   btnLogout.addEventListener('click', onLogout);
 
-  fetchPhotoBoxes();
+  mpDetailsList.items = await getAllPhotoBoxes();
 </script>
 
 </html>
