@@ -84,6 +84,7 @@
         return tagEl;
       });
       const tagsContainerEl = document.createElement('ul');
+      tagsContainerEl.classList.add('tags-container');
       tagEls.forEach(tagEl => tagsContainerEl.appendChild(tagEl));
 
       // link to create new collection from this photo box.
