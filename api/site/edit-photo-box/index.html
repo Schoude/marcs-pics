@@ -46,6 +46,7 @@
   </fieldset>
 
   <button id="btn-submit" form="photo-box">Speichern</button>
+  <button id="btn-reset" type="button">Änderungen zurücksetzen</button>
   <section>
     <h2>Tags</h2>
     <ul class="tags-container"></ul>
@@ -59,8 +60,59 @@
     const queries = new URLSearchParams(window.location.search);
     const photoBoxId = queries.get('id');
 
-    const photoBox = getPhotoBoxById(photoBoxId);
-    console.log(photoBox);
+    const photoBox = await getPhotoBoxById(photoBoxId);
+    let updatedPhotoBox = JSON.parse(JSON.stringify(photoBox));
+    let updatedTags = JSON.parse(JSON.stringify(photoBox.tags));
+
+    const formEl = document.querySelector('#photo-box');
+    const folderNameInput = document.querySelector('#folder_name');
+    const displayNameInput = document.querySelector('#display_name');
+    const descriptionInput = document.querySelector('#description');
+    const tagInput = document.querySelector('#tag');
+    const container = document.querySelector('.tags-container');
+    const btnReset = document.querySelector('#btn-reset');
+
+    function renderTags(tagsArr) {
+      container.innerHTML = '';
+
+      tagsArr.forEach(tag => {
+        const tagEl = document.createElement('li');
+        tagEl.innerText = tag;
+        tagEl.classList.add("tag");
+        container.appendChild(tagEl);
+      });
+    }
+
+    function addTag(event) {
+      if (event.target.value.trim() === '' || updatedTags.includes(event.target.value.trim()) || updatedTags.length === 10) {
+        return;
+      }
+
+      if (event.key === 'Enter') {
+        updatedTags.push(event.target.value.trim());
+        event.target.value = '';
+        renderTags(updatedTags);
+      }
+    }
+
+    function initTextFields(box) {
+      folderNameInput.value = photoBox.folder_name;
+      displayNameInput.value = photoBox.display_name;
+      descriptionInput.value = photoBox.description
+      tagInput.value = '';
+      updatedTags = JSON.parse(JSON.stringify(photoBox.tags));
+      renderTags(photoBox.tags);
+    }
+
+    initTextFields();
+
+    // let data = new FormData(formEl);
+    // [...data.entries()].forEach(([key, value]) => {
+    //   payload[key] = photoBox[key];
+    // });
+
+    tagInput.addEventListener('keyup', addTag);
+    btnReset.addEventListener('click', () => initTextFields(photoBox));
   </script>
 </body>
 

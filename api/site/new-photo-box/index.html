@@ -86,7 +86,7 @@
     }
 
     function addTag(event) {
-      if (event.target.value.trim() === '' || tags.includes(event.target.value.trim())) {
+      if (event.target.value.trim() === '' || tags.includes(event.target.value.trim()) || tags.length === 10) {
         return;
       }
 
