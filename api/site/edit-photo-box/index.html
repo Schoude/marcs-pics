@@ -21,7 +21,7 @@
     <fieldset>
       <label>
         Name des Ordners
-        <input required type="text" name="folder_name" id="folder_name">
+        <input disabled required type="text" name="folder_name" id="folder_name">
       </label>
     </fieldset>
 
@@ -54,7 +54,7 @@
 
   <script type="module">
     import { checkAuth } from '/js/auth.js';
-    import { getPhotoBoxById } from '/js/photo-box.js';
+    import { getPhotoBoxById, updatePhotoBox } from '/js/photo-box.js';
     await checkAuth();
 
     const queries = new URLSearchParams(window.location.search);
@@ -64,12 +64,15 @@
     let updatedPhotoBox = JSON.parse(JSON.stringify(photoBox));
     let updatedTags = JSON.parse(JSON.stringify(photoBox.tags));
 
+    let requestLoading = false;
+
     const formEl = document.querySelector('#photo-box');
     const folderNameInput = document.querySelector('#folder_name');
     const displayNameInput = document.querySelector('#display_name');
     const descriptionInput = document.querySelector('#description');
     const tagInput = document.querySelector('#tag');
     const container = document.querySelector('.tags-container');
+    const btnSubmitEl = document.querySelector('#btn-submit');
     const btnReset = document.querySelector('#btn-reset');
 
     function renderTags(tagsArr) {
@@ -104,15 +107,41 @@
       renderTags(photoBox.tags);
     }
 
-    initTextFields();
+    async function onSubmit(event) {
+      event.preventDefault();
+      if (requestLoading) {
+        return
+      }
+      let data = new FormData(formEl);
+      [...data.entries()].forEach(([key, value]) => {
+        updatedPhotoBox[key] = value.trim();
+      });
 
-    // let data = new FormData(formEl);
-    // [...data.entries()].forEach(([key, value]) => {
-    //   payload[key] = photoBox[key];
-    // });
+      updatedPhotoBox.tags = updatedTags;
+      delete updatedPhotoBox._id;
+      delete updatedPhotoBox.owner_id;
+      delete updatedPhotoBox.created_at;
+
+      try {
+        btnSubmitEl.setAttribute('disabled', true);
+        requestLoading = true;
+        const savedPhotoBox = await updatePhotoBox(photoBox._id.$oid, updatedPhotoBox);
+        formEl.reset();
+        btnSubmitEl.removeAttribute('disabled');
+        requestLoading = false;
+      } catch (e) {
+        btnSubmitEl.removeAttribute('disabled');
+        requestLoading = false;
+        formEl.reset();
+        throw new Error(e.message);
+      }
+    }
+
+    initTextFields();
 
     tagInput.addEventListener('keyup', addTag);
     btnReset.addEventListener('click', () => initTextFields(photoBox));
+    formEl.addEventListener('submit', onSubmit);
   </script>
 </body>
 

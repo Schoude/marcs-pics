@@ -17,12 +17,11 @@ Content-Type: application/json
 
 
 ### Update a PhotoBox by id.
-PUT http://localhost:8000/api/photo-box/62dc005ff610b93f275edad2
+PUT http://localhost:8000/api/photo-box/62e68ab51f3b00ce8a214723
 Content-Type: application/json
 
 {
-  "firebase_root_folder_name": "marcs-films",
-  "firebase_folder_name": "comingsoon2023",
+  "folder_name": "comingsoon2023",
   "display_name": "Korea-Reise 2023",
   "description": "Beschreibung folgt, wenn ich die Reise angetreten habe...",
   "urls": [],

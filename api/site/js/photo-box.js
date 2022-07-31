@@ -20,8 +20,20 @@ async function createNewPhotoBox(payload) {
   }
 }
 
+async function updatePhotoBox(id, payload) {
+  const res = await fetch(`/api/photo-box/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+  return await res.json();
+}
+
 export {
   getAllPhotoBoxes,
   getPhotoBoxById,
   createNewPhotoBox,
+  updatePhotoBox,
 }

@@ -98,10 +98,11 @@
     }
 
     async function onSubmit(event) {
+      event.preventDefault();
       if (requestLoading) {
         return
       }
-      event.preventDefault();
+
       let data = new FormData(formEl);
       [...data.entries()].forEach(([key, value]) => {
         payload[key] = value.trim();
@@ -110,6 +111,7 @@
       payload.tags = tags;
 
       try {
+        btnSubmitEl.setAttribute('disabled', true);
         requestLoading = true;
         await createNewPhotoBox(payload);
       } catch (e) {

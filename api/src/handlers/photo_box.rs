@@ -43,7 +43,7 @@ pub fn update_photo_box(
     db: &State<MongoORM>,
     _has_session: HasSession,
     id: String,
-    photo_box_update: Json<PhotoBoxCreate>,
+    photo_box_update: Json<PhotoBoxUpdate>,
 ) -> Result<(Status, Json<PhotoBox>), Status> {
     if id.is_empty() {
         return Err(Status::BadRequest);
