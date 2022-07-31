@@ -17,7 +17,7 @@ export class MpDetails extends HTMLElement {
     this.render();
   }
 
-  // 1) mounted
+  // like mounted
   // connectedCallback() {
   //   this.render();
   // }
@@ -56,18 +56,6 @@ export class MpDetails extends HTMLElement {
     // re-render after attr change
     this.render();
   }
-
-  // /**
-  //  * @param {{ name: string; id: string; description: string; }} value
-  //  */
-  // set data(value) {
-  //   console.log('--data', value);
-  //   this.pEl.textContent = value.name || '';
-  //   this.btnEl.textContent = value.id || '';
-  //   this.linkEl.href = `/test/${value.id}`;
-  //   this.smallEl.textContent = value.description || '';
-  //   this.linkEl.textContent = value.description || '';
-  // }
 
   get style() {
     return `
