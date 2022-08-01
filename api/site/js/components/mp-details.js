@@ -84,24 +84,17 @@ export class MpDetails extends HTMLElement {
         a {
           color: white;
         }
-
-        .tags-container {
-          padding: 0;
-          display: flex;
-          flex-wrap: wrap;
-          gap: 1rem;
-        }
-
-        .tag {
-          background-color: #3e7d68;
-          border-radius: 4rem;
-          padding: .25rem .75rem;
-          list-style: none;
-        }
-
       </style>
     `;
   }
+
+  // this.dispatchEvent(new CustomEvent('evt-name', {
+  // has to be called details
+  //   details: 'wateva',
+  //   bubbles: true,
+  //   composed: true, -> bubbles up until the window if true
+  // }));
+  // add a listener on the parent shadowRoot this.shadowRoot.addEventListener('evt-name', (e) => e.detail);
 
   get template() {
     return `
@@ -109,16 +102,16 @@ export class MpDetails extends HTMLElement {
       <h3>${this.name}</h3>
       <p>${this.description}</p>
       <a href="/edit-photo-box?id=${this.id}">Fotobox bearbeiten</a>
-      <!-- TODO: make the ul and the li also webcomponents -->
-      <ul class="tags-container">
-        ${this.tags.map(tag => `<li class="tag">${tag}</li>`).join('')}
-      </ul>
+      <mp-tags-container></mp-tags-container>
       <a href="/new-collection?folder=${this.folder_name}">Neue Kollektion aus dieser Fotobox erstellen</a>
     `;
   }
 
   render() {
     this.shadowRoot.innerHTML = this.template;
+
+    const tagsContaier = this.shadowRoot.querySelector('mp-tags-container');
+    tagsContaier.tags = this.tags;
   }
 }
 
