@@ -9,6 +9,7 @@
   <meta name="msapplication-TileColor" content="#ffffff">
   <meta name="theme-color" content="#ffffff">
   <link rel="stylesheet" href="/style.css">
+  <script type="module" src="/js/components/index.js"></script>
   <title>Neue Fotobox erstellen - Marc's Pics</title>
 </head>
 
@@ -49,7 +50,7 @@
   <button id="btn-submit" form="photo-box">Speichern</button>
   <section>
     <h2>Tags</h2>
-    <ul class="tags-container"></ul>
+    <mp-tags-container></mp-tags-container>
   </section>
 
   <script type="module">
@@ -61,7 +62,8 @@
     const formEl = document.querySelector('form');
     const tagInput = document.querySelector('#tag');
     const btnSubmitEl = document.querySelector('#btn-submit');
-    const container = document.querySelector('.tags-container');
+    const containerTags = document.querySelector('mp-tags-container');
+
     let requestLoading = false;
 
     let tags = [];
@@ -76,14 +78,7 @@
     let payload = payloadInit;
 
     function renderTags(tagsArr) {
-      container.innerHTML = '';
-
-      tagsArr.forEach(tag => {
-        const tagEl = document.createElement('li');
-        tagEl.classList.add('tag');
-        tagEl.innerText = tag;
-        container.appendChild(tagEl);
-      });
+      containerTags.tags = tagsArr;
     }
 
     function addTag(event) {
@@ -127,6 +122,10 @@
     }
 
     tagInput.addEventListener('keyup', addTag);
+    containerTags.addEventListener('tag:removed', (e) => {
+      tags.splice(e.detail.index, 1);
+      renderTags(tags);
+    });
     formEl.addEventListener('submit', onSubmit);
   </script>
 </body>
