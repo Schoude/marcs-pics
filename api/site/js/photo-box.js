@@ -31,9 +31,17 @@ async function updatePhotoBox(id, payload) {
   return await res.json();
 }
 
+async function uploadImage(formdata) {
+  await fetch('/api/upload-image', {
+    method: 'POST',
+    body: formdata
+  });
+}
+
 export {
   getAllPhotoBoxes,
   getPhotoBoxById,
   createNewPhotoBox,
   updatePhotoBox,
+  uploadImage,
 }

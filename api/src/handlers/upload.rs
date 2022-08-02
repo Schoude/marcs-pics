@@ -7,7 +7,7 @@ const UPLOAD_BASE: &str = "./storage";
 #[derive(FromForm)]
 pub struct Upload<'r> {
     dest_folder: String,
-    test: TempFile<'r>,
+    file: TempFile<'r>,
 }
 
 // TODO: clean up unwrap and expect
@@ -25,13 +25,13 @@ pub async fn upload_image(mut upload: Form<Upload<'_>>) -> std::io::Result<()> {
         "{}{}.{}",
         dir_path,
         file_name,
-        &upload.test.content_type().unwrap().extension().unwrap(),
+        &upload.file.content_type().unwrap().extension().unwrap(),
     );
     let path = Path::new(&path);
 
     println!("destination = {:?}", path.as_os_str());
 
-    upload.test.persist_to(path).await?;
+    upload.file.persist_to(path).await?;
     let paths = fs::read_dir(&dir_path).unwrap();
 
     for path in paths {
@@ -48,6 +48,7 @@ pub async fn upload_image(mut upload: Form<Upload<'_>>) -> std::io::Result<()> {
                 .split(dir_path.as_str())
                 .collect::<Vec<&str>>()[1]
         )
+        // TODO: push the path in the url array (or set in mongodb) for the photo box with the `dest_folder`
     }
 
     Ok(())

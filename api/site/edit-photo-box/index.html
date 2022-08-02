@@ -20,6 +20,7 @@
       padding: 0;
       overflow: auto;
       block-size: 350px;
+      background-color: #294545;
     }
 
     .preview-container mp-preview-image+mp-preview-image {
@@ -76,12 +77,13 @@
       <input type="file" multiple accept="image/jpeg">
       <h3>Vorschau</h3>
       <ul class="preview-container"></ul>
+      <button id="btn-upload" type="button">Hochladen</button>
     </section>
   </div>
 
   <script type="module">
     import { checkAuth } from '/js/auth.js';
-    import { getPhotoBoxById, updatePhotoBox } from '/js/photo-box.js';
+    import { getPhotoBoxById, updatePhotoBox, uploadImage } from '/js/photo-box.js';
     await checkAuth();
 
     const queries = new URLSearchParams(window.location.search);
@@ -104,6 +106,7 @@
     const btnReset = document.querySelector('#btn-reset');
     const fileInput = document.querySelector('input[type="file"]');
     const previewContainer = document.querySelector('.preview-container');
+    const btnUploadEl = document.querySelector('#btn-upload');
 
     function renderTags(tagsArr) {
       containerTags.tags = tagsArr;
@@ -193,6 +196,21 @@
     });
     window.addEventListener('image:removed', (e) => {
       files.splice(e.detail.index, 1);
+      renderPreviewImages(files);
+    });
+    btnUploadEl.addEventListener('click', async () => {
+      if (files.length === 0) {
+        return;
+      }
+
+      for (let i = 0; i < files.length; i++) {
+        const fd = new FormData();
+        fd.append('dest_folder', photoBox.folder_name);
+        fd.append('file', files[i]);
+        await uploadImage(fd);
+      }
+
+      files = []
       renderPreviewImages(files);
     });
   </script>
