@@ -10,6 +10,23 @@
   <meta name="theme-color" content="#ffffff">
   <link rel="stylesheet" href="/style.css">
   <script type="module" src="/js/components/index.js"></script>
+  <style>
+    .additional {
+      display: grid;
+      grid-template-columns: 50% 50%;
+    }
+
+    .preview-container {
+      padding: 0;
+      overflow: auto;
+      block-size: 350px;
+    }
+
+    .preview-container mp-preview-image+mp-preview-image {
+      margin-block-start: .75rem;
+    }
+
+  </style>
   <title>Fotobox bearbeiten - Marc's Pics</title>
 </head>
 
@@ -48,10 +65,19 @@
 
   <button id="btn-submit" form="photo-box">Speichern</button>
   <button id="btn-reset" type="button">Änderungen zurücksetzen</button>
-  <section>
-    <h2>Tags</h2>
-    <mp-tags-container></mp-tags-container>
-  </section>
+
+  <div class="additional">
+    <section>
+      <h2>Tags</h2>
+      <mp-tags-container></mp-tags-container>
+    </section>
+    <section>
+      <h2>Fotos hochladen</h2>
+      <input type="file" multiple accept="image/jpeg">
+      <h3>Vorschau</h3>
+      <ul class="preview-container"></ul>
+    </section>
+  </div>
 
   <script type="module">
     import { checkAuth } from '/js/auth.js';
@@ -64,6 +90,7 @@
     const photoBox = await getPhotoBoxById(photoBoxId);
     let updatedPhotoBox = JSON.parse(JSON.stringify(photoBox));
     let updatedTags = JSON.parse(JSON.stringify(photoBox.tags));
+    let files = [];
 
     let requestLoading = false;
 
@@ -75,6 +102,8 @@
     const containerTags = document.querySelector('mp-tags-container');
     const btnSubmitEl = document.querySelector('#btn-submit');
     const btnReset = document.querySelector('#btn-reset');
+    const fileInput = document.querySelector('input[type="file"]');
+    const previewContainer = document.querySelector('.preview-container');
 
     function renderTags(tagsArr) {
       containerTags.tags = tagsArr;
@@ -99,6 +128,23 @@
       tagInput.value = '';
       updatedTags = JSON.parse(JSON.stringify(photoBox.tags));
       renderTags(updatedTags);
+    }
+
+    function renderPreviewImages(filesArray) {
+      previewContainer.innerHTML = '';
+
+      filesArray.forEach((file, index) => {
+        const src = URL.createObjectURL(file);
+        const data = {
+          src,
+          name: file.name,
+          index,
+        }
+
+        const previewImage = document.createElement('mp-preview-image');
+        previewImage.data = data;
+        previewContainer.appendChild(previewImage);
+      });
     }
 
     async function onSubmit(event) {
@@ -140,6 +186,15 @@
       renderTags(updatedTags);
     });
     formEl.addEventListener('submit', onSubmit);
+    fileInput.addEventListener('change', (e) => {
+      files = [...e.target.files];
+      renderPreviewImages(files);
+      e.target.value = null;
+    });
+    window.addEventListener('image:removed', (e) => {
+      files.splice(e.detail.index, 1);
+      renderPreviewImages(files);
+    });
   </script>
 </body>
 

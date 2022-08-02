@@ -5,6 +5,9 @@ export class MpTagsContainer extends HTMLElement {
     this.shadow = this.attachShadow({ mode: 'open' });
   }
 
+  /**
+   * @param {string[]} value
+   */
   set tags(value) {
     this.#tags = value;
     this.render();

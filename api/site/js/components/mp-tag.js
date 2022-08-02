@@ -40,7 +40,7 @@ export class MpTag extends HTMLElement {
   get template() {
     return `
       ${this.style}
-      <li>
+      <li title="Klicken, um das Tag zu entfernen">
         ${this.#tag}
       </li>
     `;
@@ -53,7 +53,8 @@ export class MpTag extends HTMLElement {
     liEl.addEventListener('click', () => {
       this.dispatchEvent(new CustomEvent('tag:removed', {
         detail: {
-          tag: this.#tag, index: +this.#index
+          tag: this.#tag,
+          index: +this.#index
         },
         bubbles: true,
         composed: true,

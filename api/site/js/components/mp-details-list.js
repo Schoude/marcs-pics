@@ -9,7 +9,7 @@ export class MpDetailsList extends HTMLElement {
   }
 
   /**
-   * @param {any[]} value
+   * @param {unknown[]} value
    */
   set items(value) {
     this.#items = value;
