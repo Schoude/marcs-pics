@@ -41,7 +41,7 @@ export class MpPreviewImage extends HTMLElement {
     return `
       ${this.style}
       <li>
-        <img src="${this.#data.src}"/>
+        <img src="${this.#data.src}" loading="lazy" />
         <span>${this.#data.name}</span>
         <button type="button" title="Klicken, zum Entfernen">❌</button>
       </li>
