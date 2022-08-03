@@ -27,6 +27,17 @@
       margin-block-start: .75rem;
     }
 
+    .current-photos {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem
+    }
+
+    .image-current {
+      display: block;
+      height: 100px;
+    }
+
   </style>
   <title>Fotobox bearbeiten - Marc's Pics</title>
 </head>
@@ -40,7 +51,8 @@
     <fieldset>
       <label>
         Name des Ordners
-        <input disabled required type="text" name="folder_name" id="folder_name">
+        <!-- No name attr because field should not be edited -->
+        <input disabled required type="text" id="folder_name">
       </label>
     </fieldset>
 
@@ -71,6 +83,10 @@
     <section>
       <h2>Tags</h2>
       <mp-tags-container></mp-tags-container>
+
+      <h2>Vorhandene Fotos</h2>
+      <p>Gelöschte Fotos können nicht wiederhergestellt werden!</p>
+      <div class="current-photos"></div>
     </section>
     <section>
       <h2>Fotos hochladen</h2>
@@ -105,6 +121,7 @@
     const btnSubmitEl = document.querySelector('#btn-submit');
     const btnReset = document.querySelector('#btn-reset');
     const fileInput = document.querySelector('input[type="file"]');
+    const currentPhotos = document.querySelector('.current-photos');
     const previewContainer = document.querySelector('.preview-container');
     const btnUploadEl = document.querySelector('#btn-upload');
 
@@ -131,6 +148,18 @@
       tagInput.value = '';
       updatedTags = JSON.parse(JSON.stringify(photoBox.tags));
       renderTags(updatedTags);
+    }
+
+    function renderCurrentImages() {
+      photoBox.urls.forEach(url => {
+        // TODO: make to component
+        // put the delete button directly under the image
+        const image = document.createElement('img');
+        image.setAttribute('loading', 'lazy');
+        image.classList.add('image-current');
+        image.src = url;
+        currentPhotos.appendChild(image);
+      });
     }
 
     function renderPreviewImages(filesArray) {
@@ -169,18 +198,17 @@
         btnSubmitEl.setAttribute('disabled', true);
         requestLoading = true;
         const savedPhotoBox = await updatePhotoBox(photoBox._id.$oid, updatedPhotoBox);
-        formEl.reset();
         btnSubmitEl.removeAttribute('disabled');
         requestLoading = false;
       } catch (e) {
         btnSubmitEl.removeAttribute('disabled');
         requestLoading = false;
-        formEl.reset();
         throw new Error(e.message);
       }
     }
 
     initTextFields();
+    renderCurrentImages();
 
     tagInput.addEventListener('keyup', addTag);
     btnReset.addEventListener('click', () => initTextFields(photoBox));
