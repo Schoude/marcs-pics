@@ -1,4 +1,5 @@
-use rocket::{form::Form, fs::TempFile};
+use crate::{db::mongodb::MongoORM, guards::has_session::HasSession};
+use rocket::{form::Form, fs::TempFile, http::Status, State};
 use std::{fs, path::Path};
 use uuid::Uuid;
 
@@ -10,9 +11,14 @@ pub struct Upload<'r> {
     file: TempFile<'r>,
 }
 
+/// Uploads a file to the given destination folder.
 // TODO: clean up unwrap and expect
 #[post("/upload-image", data = "<upload>")]
-pub async fn upload_image(mut upload: Form<Upload<'_>>) -> std::io::Result<()> {
+pub async fn upload_image(
+    mut upload: Form<Upload<'_>>,
+    _has_session: HasSession,
+    db: &State<MongoORM>,
+) -> Result<Status, Status> {
     let file_name = Uuid::new_v4();
     let dir_path = format!("{}/{}/", UPLOAD_BASE, &upload.dest_folder);
     let dest_exists = Path::new(&dir_path).is_dir();
@@ -29,27 +35,18 @@ pub async fn upload_image(mut upload: Form<Upload<'_>>) -> std::io::Result<()> {
     );
     let path = Path::new(&path);
 
-    println!("destination = {:?}", path.as_os_str());
-
-    upload.file.persist_to(path).await?;
-    let paths = fs::read_dir(&dir_path).unwrap();
-
-    for path in paths {
-        println!(
-            "Full Path of file: {}",
-            path.as_ref().unwrap().path().display()
-        );
-        println!(
-            "File name: {}",
-            path.unwrap()
-                .path()
-                .to_str()
-                .unwrap()
-                .split(dir_path.as_str())
-                .collect::<Vec<&str>>()[1]
-        )
-        // TODO: push the path in the url array (or set in mongodb) for the photo box with the `dest_folder`
+    if upload.file.persist_to(path).await.is_err() {
+        return Err(Status::InternalServerError);
     }
 
-    Ok(())
+    let mut path_string = path.to_str().unwrap().to_string();
+    path_string.replace_range(0..1, "");
+
+    // save the path to the photo box
+    let update_result = db.add_url_to_photo_box(&upload.dest_folder, &path_string);
+
+    match update_result {
+        Ok(_) => Ok(Status::Created),
+        Err(_) => Err(Status::InternalServerError),
+    }
 }

@@ -217,6 +217,25 @@ impl MongoORM {
         Ok(updated_res)
     }
 
+    /// Updates a url to the PhotoBoxes.
+    pub fn add_url_to_photo_box(
+        &self,
+        folder_name: &String,
+        url: &String,
+    ) -> Result<UpdateResult, Error> {
+        let filter = doc! { "folder_name": folder_name };
+        let update = doc! {
+            "$push": {
+                "urls": url,
+            }
+        };
+        let updated_res = self
+            .photo_boxes_collection
+            .update_one(filter, update, None)
+            .expect("Error adding the url to the PhotoBox");
+        Ok(updated_res)
+    }
+
     /// Creates a user session.
     pub fn create_user_session(
         &self,
