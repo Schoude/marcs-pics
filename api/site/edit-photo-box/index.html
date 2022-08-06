@@ -150,14 +150,11 @@
       renderTags(updatedTags);
     }
 
-    function renderCurrentImages() {
-      photoBox.urls.forEach(url => {
-        // TODO: make to component
-        // put the delete button directly under the image
-        const image = document.createElement('img');
-        image.setAttribute('loading', 'lazy');
-        image.classList.add('image-current');
-        image.src = url;
+    function renderCurrentImages(box) {
+      currentPhotos.innerHTML = '';
+      box.urls.forEach(url => {
+        const image = document.createElement('mp-current-image');
+        image.url = url;
         currentPhotos.appendChild(image);
       });
     }
@@ -208,7 +205,7 @@
     }
 
     initTextFields();
-    renderCurrentImages();
+    renderCurrentImages(photoBox);
 
     tagInput.addEventListener('keyup', addTag);
     btnReset.addEventListener('click', () => initTextFields(photoBox));
@@ -240,6 +237,12 @@
 
       files = []
       renderPreviewImages(files);
+
+      const box = await getPhotoBoxById(photoBoxId);
+      renderCurrentImages(box);
+    });
+    window.addEventListener('image:deleted', async (e) => {
+      console.log(e.detail);
     });
   </script>
 </body>
