@@ -32,9 +32,15 @@ async function updatePhotoBox(id, payload) {
 }
 
 async function uploadImage(formdata) {
-  await fetch('/api/upload-image', {
+  await fetch('/api/image-upload', {
     method: 'POST',
     body: formdata
+  });
+}
+
+async function deleteImage(id, url) {
+  await fetch(`/api/image-delete?id=${id}&url=${url}`, {
+    method: 'DELETE',
   });
 }
 
@@ -44,4 +50,5 @@ export {
   createNewPhotoBox,
   updatePhotoBox,
   uploadImage,
+  deleteImage,
 }

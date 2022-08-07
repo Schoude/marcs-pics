@@ -217,7 +217,7 @@ impl MongoORM {
         Ok(updated_res)
     }
 
-    /// Updates a url to the PhotoBoxes.
+    /// Adds a url to the PhotoBoxes.
     pub fn add_url_to_photo_box(
         &self,
         folder_name: &String,
@@ -233,6 +233,29 @@ impl MongoORM {
             .photo_boxes_collection
             .update_one(filter, update, None)
             .expect("Error adding the url to the PhotoBox");
+        Ok(updated_res)
+    }
+
+    /// Removes a url from the PhotoBoxes.
+    pub fn remove_url_from_photo_box(
+        &self,
+        id: &String,
+        url: &String,
+    ) -> Result<UpdateResult, Error> {
+        let obj_id = match ObjectId::parse_str(id) {
+            Ok(oid) => oid,
+            Err(e) => return Err(Error::InvalidObjectId(e)),
+        };
+        let filter = doc! { "_id": obj_id };
+        let update = doc! {
+            "$pull": {
+                "urls": url,
+            }
+        };
+        let updated_res = self
+            .photo_boxes_collection
+            .update_one(filter, update, None)
+            .expect("Error removing the url from the PhotoBox");
         Ok(updated_res)
     }
 

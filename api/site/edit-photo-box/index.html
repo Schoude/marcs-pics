@@ -99,7 +99,7 @@
 
   <script type="module">
     import { checkAuth } from '/js/auth.js';
-    import { getPhotoBoxById, updatePhotoBox, uploadImage } from '/js/photo-box.js';
+    import { getPhotoBoxById, updatePhotoBox, uploadImage, deleteImage } from '/js/photo-box.js';
     await checkAuth();
 
     const queries = new URLSearchParams(window.location.search);
@@ -242,7 +242,9 @@
       renderCurrentImages(box);
     });
     window.addEventListener('image:deleted', async (e) => {
-      console.log(e.detail);
+      await deleteImage(photoBox._id.$oid, e.detail.url);
+      photoBox.urls.splice(photoBox.urls.indexOf(e.detail.url), 1);
+      renderCurrentImages(photoBox);
     });
   </script>
 </body>

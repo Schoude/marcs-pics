@@ -13,8 +13,8 @@ pub struct Upload<'r> {
 
 /// Uploads a file to the given destination folder.
 // TODO: clean up unwrap and expect
-#[post("/upload-image", data = "<upload>")]
-pub async fn upload_image(
+#[post("/image-upload", data = "<upload>")]
+pub async fn image_upload(
     mut upload: Form<Upload<'_>>,
     _has_session: HasSession,
     db: &State<MongoORM>,
@@ -44,6 +44,22 @@ pub async fn upload_image(
 
     // save the path to the photo box
     let update_result = db.add_url_to_photo_box(&upload.dest_folder, &path_string);
+
+    match update_result {
+        Ok(_) => Ok(Status::Created),
+        Err(_) => Err(Status::InternalServerError),
+    }
+}
+
+/// Delete an image based on the url.
+#[delete("/image-delete?<id>&<url>")]
+pub fn image_delete(id: &str, url: &str, db: &State<MongoORM>) -> Result<Status, Status> {
+    match fs::remove_file(format!(".{}", url)) {
+        Ok(res) => res,
+        Err(_) => return Err(Status::InternalServerError),
+    };
+
+    let update_result = db.remove_url_from_photo_box(&id.to_string(), &url.to_string());
 
     match update_result {
         Ok(_) => Ok(Status::Created),
