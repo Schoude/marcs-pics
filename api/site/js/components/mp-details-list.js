@@ -38,6 +38,7 @@ export class MpDetailsList extends HTMLElement {
             id='${item._id.$oid}'
             name='${item.display_name}'
             description='${item.description}'
+            count='${item.urls.length}'
             folder-name='${item.folder_name}'
             tags='${tagStrings}'
           /></mp-details>

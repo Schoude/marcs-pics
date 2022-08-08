@@ -1,8 +1,9 @@
 export class MpDetails extends HTMLElement {
   id = '';
   name = '';
-  description = ''
-  folder_name = ''
+  description = '';
+  count = '';
+  folder_name = '';
   tags = [];
 
   constructor() {
@@ -27,7 +28,7 @@ export class MpDetails extends HTMLElement {
 
   // needed to trigger the attributeChangedCallback
   static get observedAttributes() {
-    return ['id', 'name', 'description', 'folder-name', 'tags'];
+    return ['id', 'name', 'description', 'count', 'folder-name', 'tags'];
   }
 
   // like watch on a variable
@@ -43,10 +44,13 @@ export class MpDetails extends HTMLElement {
         this.id = newVal || '';
         break;
       case 'description':
-        this.description = newVal || ''
+        this.description = newVal || '';
+        break;
+      case 'count':
+        this.count = newVal || '';
         break;
       case 'folder-name':
-        this.folder_name = newVal || ''
+        this.folder_name = newVal || '';
         break;
       case 'tags':
         this.tags = JSON.parse(newVal) || [];
@@ -79,6 +83,9 @@ export class MpDetails extends HTMLElement {
 
         h3 {
           margin-top: 0;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
         }
 
         a {
@@ -88,18 +95,10 @@ export class MpDetails extends HTMLElement {
     `;
   }
 
-  // this.dispatchEvent(new CustomEvent('evt-name', {
-  // has to be called details
-  //   details: 'wateva',
-  //   bubbles: true,
-  //   composed: true, -> bubbles up until the window if true
-  // }));
-  // add a listener on the parent shadowRoot this.shadowRoot.addEventListener('evt-name', (e) => e.detail);
-
   get template() {
     return `
       ${this.style}
-      <h3>${this.name}</h3>
+      <h3>${this.name} <span id="count">${this.count}</span></h3>
       <p>${this.description}</p>
       <a href="/edit-photo-box?id=${this.id}">Fotobox bearbeiten</a>
       <mp-tags-container></mp-tags-container>

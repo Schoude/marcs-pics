@@ -84,7 +84,7 @@
       <h2>Tags</h2>
       <mp-tags-container></mp-tags-container>
 
-      <h2>Vorhandene Fotos</h2>
+      <h2>Vorhandene Fotos: <span id="count-current"></span></h2>
       <p>Gelöschte Fotos können nicht wiederhergestellt werden!</p>
       <div class="current-photos"></div>
     </section>
@@ -100,6 +100,7 @@
   <script type="module">
     import { checkAuth } from '/js/auth.js';
     import { getPhotoBoxById, updatePhotoBox, uploadImage, deleteImage } from '/js/photo-box.js';
+    import { proxRender } from '/js/reactivity.js';
     await checkAuth();
 
     const queries = new URLSearchParams(window.location.search);
@@ -122,8 +123,14 @@
     const btnReset = document.querySelector('#btn-reset');
     const fileInput = document.querySelector('input[type="file"]');
     const currentPhotos = document.querySelector('.current-photos');
+    const countCurrentEl = document.querySelector('#count-current');
     const previewContainer = document.querySelector('.preview-container');
     const btnUploadEl = document.querySelector('#btn-upload');
+
+    // Reactive variables that get re-rendered on change
+    const countCurrent = proxRender(photoBox.urls.length, countCurrentEl, (value, el) => {
+      el.innerText = value;
+    });
 
     function renderTags(tagsArr) {
       containerTags.tags = tagsArr;
@@ -239,11 +246,13 @@
       renderPreviewImages(files);
 
       const box = await getPhotoBoxById(photoBoxId);
+      countCurrent.value = box.urls.length;
       renderCurrentImages(box);
     });
     window.addEventListener('image:deleted', async (e) => {
       await deleteImage(photoBox._id.$oid, e.detail.url);
       photoBox.urls.splice(photoBox.urls.indexOf(e.detail.url), 1);
+      countCurrent.value = photoBox.urls.length ?? 0;
       renderCurrentImages(photoBox);
     });
   </script>
