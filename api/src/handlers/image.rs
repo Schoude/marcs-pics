@@ -52,17 +52,26 @@ pub async fn image_upload(
 }
 
 /// Delete an image based on the url.
-#[delete("/image-delete?<id>&<url>")]
-pub fn image_delete(id: &str, url: &str, db: &State<MongoORM>) -> Result<Status, Status> {
-    match fs::remove_file(format!(".{}", url)) {
-        Ok(res) => res,
-        Err(_) => return Err(Status::InternalServerError),
-    };
+#[delete("/image-delete?<id>&<urls>")]
+pub fn image_delete(id: &str, urls: &str, db: &State<MongoORM>) -> Result<Status, Status> {
+    let paths = urls.split(',').collect::<Vec<&str>>();
 
-    let update_result = db.remove_url_from_photo_box(&id.to_string(), &url.to_string());
+    let mut result: Result<Status, Status> = Err(Status::InternalServerError);
 
-    match update_result {
-        Ok(_) => Ok(Status::Created),
-        Err(_) => Err(Status::InternalServerError),
+    for path in paths.iter() {
+        println!("*********** PATH: {}", path);
+        match fs::remove_file(format!(".{}", path)) {
+            Ok(res) => res,
+            Err(_) => return Err(Status::InternalServerError),
+        };
+
+        let update_result = db.remove_url_from_photo_box(&id.to_string(), &path.to_string());
+
+        result = match update_result {
+            Ok(_) => Ok(Status::Ok),
+            Err(_) => Err(Status::InternalServerError),
+        };
     }
+
+    result
 }

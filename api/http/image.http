@@ -1,0 +1,3 @@
+### Delete one or more images.
+
+DELETE http://localhost:8000/api/image-delete?id=62e68ab51f3b00ce8a214723&urls=/storage/usa2022/64fed247-a411-4556-9138-4ce4003e10a4.jpeg,/storage/usa2022/1900ce20-c2c6-452f-ac45-57cccaa10313.jpeg

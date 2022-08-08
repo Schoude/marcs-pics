@@ -38,8 +38,11 @@ async function uploadImage(formdata) {
   });
 }
 
+/**
+ * To delete multiple images concatenate them with a ','
+ */
 async function deleteImage(id, url) {
-  await fetch(`/api/image-delete?id=${id}&url=${url}`, {
+  await fetch(`/api/image-delete?id=${id}&urls=${url}`, {
     method: 'DELETE',
   });
 }

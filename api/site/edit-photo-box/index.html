@@ -106,7 +106,7 @@
     const queries = new URLSearchParams(window.location.search);
     const photoBoxId = queries.get('id');
 
-    const photoBox = await getPhotoBoxById(photoBoxId);
+    let photoBox = await getPhotoBoxById(photoBoxId);
     let updatedPhotoBox = JSON.parse(JSON.stringify(photoBox));
     let updatedTags = JSON.parse(JSON.stringify(photoBox.tags));
     let files = [];
@@ -245,14 +245,14 @@
       files = []
       renderPreviewImages(files);
 
-      const box = await getPhotoBoxById(photoBoxId);
-      countCurrent.value = box.urls.length;
-      renderCurrentImages(box);
+      photoBox = await getPhotoBoxById(photoBoxId);
+      countCurrent.value = photoBox.urls.length;
+      renderCurrentImages(photoBox);
     });
     window.addEventListener('image:deleted', async (e) => {
       await deleteImage(photoBox._id.$oid, e.detail.url);
       photoBox.urls.splice(photoBox.urls.indexOf(e.detail.url), 1);
-      countCurrent.value = photoBox.urls.length ?? 0;
+      countCurrent.value = photoBox.urls.length;
       renderCurrentImages(photoBox);
     });
   </script>
