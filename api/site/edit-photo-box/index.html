@@ -235,12 +235,12 @@
         return;
       }
 
-      for (let i = 0; i < files.length; i++) {
+      await Promise.allSettled(files.map(file => {
         const fd = new FormData();
         fd.append('dest_folder', photoBox.folder_name);
-        fd.append('file', files[i]);
-        await uploadImage(fd);
-      }
+        fd.append('file', file);
+        return uploadImage(fd);
+      }))
 
       files = []
       renderPreviewImages(files);
