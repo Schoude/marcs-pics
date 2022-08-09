@@ -3,7 +3,6 @@ export class MpDetails extends HTMLElement {
   name = '';
   description = '';
   count = '';
-  folder_name = '';
   tags = [];
 
   constructor() {
@@ -28,7 +27,7 @@ export class MpDetails extends HTMLElement {
 
   // needed to trigger the attributeChangedCallback
   static get observedAttributes() {
-    return ['id', 'name', 'description', 'count', 'folder-name', 'tags'];
+    return ['id', 'name', 'description', 'count', 'tags'];
   }
 
   // like watch on a variable
@@ -48,9 +47,6 @@ export class MpDetails extends HTMLElement {
         break;
       case 'count':
         this.count = newVal || '';
-        break;
-      case 'folder-name':
-        this.folder_name = newVal || '';
         break;
       case 'tags':
         this.tags = JSON.parse(newVal) || [];
@@ -102,7 +98,7 @@ export class MpDetails extends HTMLElement {
       <p>${this.description}</p>
       <a href="/edit-photo-box?id=${this.id}">Fotobox bearbeiten</a>
       <mp-tags-container></mp-tags-container>
-      <a href="/new-collection?folder=${this.folder_name}">Neue Kollektion aus dieser Fotobox erstellen</a>
+      <a href="/new-collection?id=${this.id}">Neue Kollektion aus dieser Fotobox erstellen</a>
     `;
   }
 
