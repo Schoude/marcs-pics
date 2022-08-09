@@ -5,14 +5,13 @@ use crate::{
 };
 use base64::{decode, encode};
 use bcrypt::verify;
-use dotenv::dotenv;
 use rocket::{
     http::{Cookie, CookieJar, SameSite, Status},
     serde::json::Json,
     time::Duration,
     State,
 };
-use std::{env, str};
+use std::str;
 
 const SESSION_COOKIE_LIFE_TIME_SECONDS: i64 = 600;
 pub const SESSION_COOKIE_NAME: &str = "m_p_session";
@@ -125,19 +124,11 @@ pub fn me(cookies: &CookieJar, db: &State<MongoORM>) -> Result<(Status, Json<Use
         Err(_) => return Err(Status::InternalServerError),
     };
 
-    // 3) attach the encoded firebase config.
-    dotenv().ok();
-    let config = match env::var("FIREBASE_CONFIG") {
-        Ok(val) => val,
-        Err(e) => format!("Error loading the env variable: {e}"),
-    };
-
     let user_auth = UserAuth {
         _id: user._id,
         email: user.email,
         nickname: user.nickname,
         role: user.role,
-        firebase_config: encode(config),
     };
 
     Ok((Status::Ok, Json(user_auth)))

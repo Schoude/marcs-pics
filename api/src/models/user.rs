@@ -58,5 +58,4 @@ pub struct UserAuth {
     pub nickname: String,
     pub email: String,
     pub role: UserRole,
-    pub firebase_config: String,
 }
