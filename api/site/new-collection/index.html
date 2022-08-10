@@ -9,12 +9,18 @@
   <meta name="msapplication-TileColor" content="#ffffff">
   <meta name="theme-color" content="#ffffff">
   <link rel="stylesheet" href="/style.css">
+  <script type="module" src="/js/components/index.js"></script>
   <title>Neue Kollektion erstellen - Marc's Pics</title>
   <style>
     .grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
     }
+
+    mp-image-switcher+mp-image-switcher {
+      margin-block-start: 1rem;
+    }
+
   </style>
 </head>
 
@@ -52,12 +58,10 @@
     const urls = proxRender(JSON.parse(JSON.stringify(photoBox.urls)), sourceImagesContainer, (value, el) => {
       sourceImagesContainer.innerHTML = '';
       value.forEach(url => {
-        // TODO: make component
-        // use button with right arrow (➡) to put an image to the collection images
-
-        const urlEl = document.createElement('p');
-        urlEl.innerText = url;
-        el.appendChild(urlEl);
+        const imageSwitcher = document.createElement('mp-image-switcher');
+        // imageSwitcher.data = { url, type: 'insert' };
+        imageSwitcher.data = { url, type: 'remove' };
+        el.appendChild(imageSwitcher);
       });
     });
   </script>
