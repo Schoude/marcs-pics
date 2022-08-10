@@ -94,7 +94,11 @@ export class MpDetails extends HTMLElement {
   get template() {
     return `
       ${this.style}
-      <h3>${this.name} <span id="count">${this.count}</span></h3>
+      <h3>${this.name}
+        <div>
+          <span id="count">${this.count}</span>&nbsp;Fotos
+        </div>
+      </h3>
       <p>${this.description}</p>
       <a href="/edit-photo-box?id=${this.id}">Fotobox bearbeiten</a>
       <mp-tags-container></mp-tags-container>

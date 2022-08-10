@@ -29,6 +29,15 @@ a {
   color: white;
 }
 
+button {
+  cursor: pointer;
+}
+
+input {
+  font: inherit;
+  padding: .5rem .75rem;
+}
+
 fieldset {
   border: none;
 }

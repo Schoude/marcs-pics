@@ -2,15 +2,15 @@ export class MpImageSwticher extends HTMLElement {
   /**
    * type: 'insert' | 'remove'
    * url: string;
+   * comment?: string;
    */
   #data;
-  #commentInputTemplate = `
+  #commentInputTemplateStatic = `
     <div class="comment-wrapper">
       <input class="input-comment" type="text" placeholder="Dein Kommentar zum Foto" />
-      <button class="btn-comment-add" type="button">➕</button>
+      <button class="btn-comment-add" type="button" title="Kommentar hinzufügen">➕</button>
     </div>
   `;
-  #comment = '';
 
   constructor() {
     super();
@@ -21,10 +21,10 @@ export class MpImageSwticher extends HTMLElement {
   set data(value) {
     this.#data = value;
 
-    this.render();
+    this.#render();
   }
 
-  get style() {
+  get #style() {
     return `
     <style>
       :host {
@@ -36,6 +36,7 @@ export class MpImageSwticher extends HTMLElement {
       }
 
       .btn {
+        cursor: pointer;
         inline-size: 50px;
         flex: none;
       }
@@ -48,43 +49,86 @@ export class MpImageSwticher extends HTMLElement {
     `;
   }
 
-  get template() {
+  get #commentDisplayTemplate() {
     return `
-      ${this.style}
+      <p>
+        <i>
+          ${this.#data?.comment}
+        </i>
+        <button class="btn-comment-remove" type="button" title="Kommentar entfernen">➖</button>
+      </p>
+    `;
+  }
+
+  get #commentTemplate() {
+    if (this.#data.type === 'remove') {
+      if (this.#data.comment) {
+        return this.#commentDisplayTemplate;
+      } else {
+        return this.#commentInputTemplateStatic;
+      }
+    } else {
+      return '';
+    }
+  }
+
+  get #template() {
+    return `
+      ${this.#style}
       <div class="wrapper">
-        ${this.#data.type === 'remove' ? '<button class="btn remove" type="button">⬅</button>' : ''}
+        ${this.#data.type === 'remove' ? '<button class="btn remove" type="button" title="Aus der Kollektion entfernen">⬅</button>' : ''}
         <div class="body">
-          <img src="${this.#data.url}" loading="lazy" />
-          ${this.#data.type === 'remove' ? this.#commentInputTemplate : ''}
+          <img src="${this.#data.url}" loading="lazy" alt=""/>
+          ${this.#commentTemplate}
         </div>
-        ${this.#data.type === 'insert' ? '<button class="btn insert" type="button">➡</button>' : ''}
+        ${this.#data.type === 'insert' ? '<button class="btn insert" type="button" title="Zur Kollektion hinzufügen">➡</button>' : ''}
       </div>
     `;
   }
 
-  render() {
-    this.shadowRoot.innerHTML = this.template;
+  #render() {
+    this.shadowRoot.innerHTML = this.#template;
 
     if (this.#data.type === 'remove') {
       const btnRemove = this.shadowRoot.querySelector('.remove');
-      btnRemove.addEventListener('click', () => {
-        console.log('remove clicked', this.#data.url);
+      btnRemove?.addEventListener('click', () => {
+        this.dispatchEvent(new CustomEvent('image:removed', {
+          detail: this.#data.url,
+          bubbles: true,
+        }))
       });
 
-      // Comment input and button
+      // Comment input and buttons
       const commentInput = this.shadowRoot.querySelector('.input-comment');
 
       const btnCommentAdd = this.shadowRoot.querySelector('.btn-comment-add');
-      btnCommentAdd.addEventListener('click', () => {
+      btnCommentAdd?.addEventListener('click', () => {
         if (commentInput.value) {
-          this.#comment = commentInput.value;
+          this.dispatchEvent(new CustomEvent('comment:added', {
+            detail: {
+              url: this.#data.url,
+              comment: commentInput.value
+            },
+            bubbles: true,
+          }))
           commentInput.value = '';
         }
+      });
+
+      const btnCommentRemove = this.shadowRoot.querySelector('.btn-comment-remove');
+      btnCommentRemove?.addEventListener('click', () => {
+        this.dispatchEvent(new CustomEvent('comment:removed', {
+          detail: this.#data.url,
+          bubbles: true,
+        }))
       });
     } else {
       const btnInsert = this.shadowRoot.querySelector('.insert');
       btnInsert.addEventListener('click', () => {
-        console.log('insert clicked', this.#data.url);
+        this.dispatchEvent(new CustomEvent('image:inserted', {
+          detail: this.#data.url,
+          bubbles: true,
+        }))
       });
     }
   }

@@ -27,6 +27,7 @@ export class MpCurrentImage extends HTMLElement {
 
     button {
       inline-size: 100%;
+      cursor: pointer;
     }
     </style>
     `;

@@ -15,6 +15,27 @@
     .grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
+      gap: 1.5rem
+    }
+
+    .source-images,
+    .shared-images {
+      max-block-size: 600px;
+      overflow-y: auto;
+      padding-inline: 2rem;
+      padding-block-end: 2rem;
+      background-color: #294545;
+    }
+
+    .source-images h2,
+    .shared-images h2 {
+      margin: 0;
+      block-size: 50px;
+      position: sticky;
+      inset-block-start: 0;
+      background-color: inherit;
+      display: flex;
+      align-items: center;
     }
 
     mp-image-switcher+mp-image-switcher {
@@ -38,7 +59,9 @@
 
     <section class="shared-images">
       <h2>Bilder in der Kollektion</h2>
-      <div class="shared-images-inner"></div>
+      <div class="shared-images-inner">
+        <p><i>Es sind noch keine Bilder in der Kollektion vorhanden</i></p>
+      </div>
     </section>
   </div>
 
@@ -59,10 +82,30 @@
       sourceImagesContainer.innerHTML = '';
       value.forEach(url => {
         const imageSwitcher = document.createElement('mp-image-switcher');
-        // imageSwitcher.data = { url, type: 'insert' };
-        imageSwitcher.data = { url, type: 'remove' };
+        imageSwitcher.data = { url, type: 'insert' };
+
+        // REMOVE switcher
+        // comment can be added from the imageSwitcher element
+        // set on the array enty of the shared photo and re-render them
+        // imageSwitcher.data = { url, type: 'remove', comment: 'Comment test!' };
+        //imageSwitcher.data = { url, type: 'remove' };
         el.appendChild(imageSwitcher);
       });
+    });
+
+    // Listeners for insert, remove and comment add / remove custom events
+    window.addEventListener('image:inserted', (e) => {
+      console.log('image inserted', e.detail);
+    });
+    window.addEventListener('image:removed', (e) => {
+      console.log('image removed', e.detail);
+    });
+    window.addEventListener('comment:added', (e) => {
+      console.log('comment added for image', e.detail.url);
+      console.log('comment', e.detail.comment);
+    });
+    window.addEventListener('comment:removed', (e) => {
+      console.log('comment removed for image', e.detail);
     });
   </script>
 </body>

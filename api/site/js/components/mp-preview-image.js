@@ -33,6 +33,10 @@ export class MpPreviewImage extends HTMLElement {
         inline-size: 120px;
         object-fit: cover;
       }
+
+      button {
+        cursor: pointer;
+      }
       </style>
     `;
   }
