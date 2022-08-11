@@ -14,12 +14,13 @@
   <style>
     .grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr;
       gap: 1.5rem
     }
 
     .source-images,
     .shared-images {
+      min-block-size: 260px;
       max-block-size: 600px;
       overflow-y: auto;
       padding-inline: 2rem;
@@ -52,6 +53,25 @@
   <h1>Neue Kollektion erstellen</h1>
 
   <div class="grid">
+    <section class="meta-data">
+      <h2>Meta-Informationen</h2>
+      <div class="meta-data-inner">
+        <form id="form-shared-collection">
+          <label>
+            Beschreibung der Kollektion
+            <input type="text" name="description" id="description">
+          </label>
+          <label>
+            Zugangspasswort der Kollektion (optional)
+            <input type="text" name="password" id="password">
+          </label>
+        </form>
+        <!-- Tags anzeigen und weitere extra hinzufügen können -->
+        <!-- Basis tags der Photobox bleiben immer bestehen. Es können nur weitere verändert werden. -->
+        <button form="form-shared-collection">Kollektion speichern</button>
+      </div>
+    </section>
+
     <section class="source-images">
       <h2>Bilder zur Auswahl</h2>
       <div class="source-images-inner"></div>
@@ -68,27 +88,54 @@
   <script type="module">
     import { checkAuth } from '/js/auth.js';
     import { getPhotoBoxById } from '/js/photo-box.js';
+    import { generateCollectionImage } from '/js/collection-image.js';
     import { proxRender } from '/js/reactivity.js';
     await checkAuth();
 
     const queries = new URLSearchParams(window.location.search);
     const photoBoxId = queries.get('id');
+    if (photoBoxId == null) {
+      window.location.pathname = '/';
+    }
     const photoBox = await getPhotoBoxById(photoBoxId);
 
     // Elements
     const sourceImagesContainer = document.querySelector('.source-images-inner');
+    const sharedImagesContainer = document.querySelector('.shared-images-inner');
 
-    const urls = proxRender(JSON.parse(JSON.stringify(photoBox.urls)), sourceImagesContainer, (value, el) => {
+    const urls = proxRender([...photoBox.urls], sourceImagesContainer, (value, el) => {
       sourceImagesContainer.innerHTML = '';
       value.forEach(url => {
         const imageSwitcher = document.createElement('mp-image-switcher');
         imageSwitcher.data = { url, type: 'insert' };
+        el.appendChild(imageSwitcher);
+      });
+    });
 
-        // REMOVE switcher
-        // comment can be added from the imageSwitcher element
-        // set on the array enty of the shared photo and re-render them
-        // imageSwitcher.data = { url, type: 'remove', comment: 'Comment test!' };
-        //imageSwitcher.data = { url, type: 'remove' };
+    // SharedCollection
+    const sharedCollection = {
+      // delete from object if null
+      password: null,
+      photo_box_id: photoBox._id.$oid,
+      hash: '0f435s4fhr8iu4', // TODO: write randomstring helper or create hash from some value
+      description: null,
+      images: [],
+    };
+
+    // Images for the SharedCollection
+    const collectionImages = proxRender([], sharedImagesContainer, (value, el) => {
+      sharedImagesContainer.innerHTML = '';
+
+      if (value.length === 0) {
+        return;
+      }
+
+      value.forEach(collectionImage => {
+        const imageSwitcher = document.createElement('mp-image-switcher');
+        imageSwitcher.data = {
+          url: collectionImage.url,
+          type: 'remove',
+        };
         el.appendChild(imageSwitcher);
       });
     });
@@ -96,16 +143,44 @@
     // Listeners for insert, remove and comment add / remove custom events
     window.addEventListener('image:inserted', (e) => {
       console.log('image inserted', e.detail);
+      let tempUrls = [...urls.value];
+
+      tempUrls.splice(tempUrls.indexOf(e.detail), 1);
+      urls.value = tempUrls;
+
+      let tempCollectionImages = [...collectionImages.value];
+      const collectionImage = generateCollectionImage(
+        e.detail,
+        photoBox.tags,
+        tempCollectionImages.length === 0
+          ? 0
+          : tempCollectionImages.length - 1
+      );
+      console.log(collectionImage);
+      tempCollectionImages.push(collectionImage);
+      collectionImages.value = tempCollectionImages;
     });
+
     window.addEventListener('image:removed', (e) => {
-      console.log('image removed', e.detail);
+      let tempCollectionImages = [...collectionImages.value];
+      tempCollectionImages.splice(
+        tempCollectionImages
+          .findIndex(collectionImage => collectionImage.url === e.detail),
+        1);
+      collectionImages.value = tempCollectionImages;
+
+      let tempUrls = [...urls.value];
+      tempUrls.push(e.detail);
+      urls.value = tempUrls;
     });
-    window.addEventListener('comment:added', (e) => {
-      console.log('comment added for image', e.detail.url);
-      console.log('comment', e.detail.comment);
+
+    window.addEventListener('description:added', (e) => {
+      console.log('description added for image', e.detail.url);
+      console.log('description', e.detail.description);
     });
-    window.addEventListener('comment:removed', (e) => {
-      console.log('comment removed for image', e.detail);
+
+    window.addEventListener('description:removed', (e) => {
+      console.log('description removed for image', e.detail);
     });
   </script>
 </body>

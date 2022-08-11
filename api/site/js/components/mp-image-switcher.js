@@ -2,13 +2,13 @@ export class MpImageSwticher extends HTMLElement {
   /**
    * type: 'insert' | 'remove'
    * url: string;
-   * comment?: string;
+   * description?: string;
    */
   #data;
-  #commentInputTemplateStatic = `
-    <div class="comment-wrapper">
-      <input class="input-comment" type="text" placeholder="Dein Kommentar zum Foto" />
-      <button class="btn-comment-add" type="button" title="Kommentar hinzufügen">➕</button>
+  #descriptionInputTemplateStatic = `
+    <div class="description-wrapper">
+      <input class="input-description" type="text" placeholder="Deine Beschreibung zum Foto" />
+      <button class="btn-description-add" type="button" title="Beschreibung hinzufügen">➕</button>
     </div>
   `;
 
@@ -49,23 +49,23 @@ export class MpImageSwticher extends HTMLElement {
     `;
   }
 
-  get #commentDisplayTemplate() {
+  get #descriptionDisplayTemplate() {
     return `
       <p>
         <i>
-          ${this.#data?.comment}
+          ${this.#data?.description}
         </i>
-        <button class="btn-comment-remove" type="button" title="Kommentar entfernen">➖</button>
+        <button class="btn-description-remove" type="button" title="Beschreibung entfernen">➖</button>
       </p>
     `;
   }
 
-  get #commentTemplate() {
+  get #descriptionTemplate() {
     if (this.#data.type === 'remove') {
-      if (this.#data.comment) {
-        return this.#commentDisplayTemplate;
+      if (this.#data.description) {
+        return this.#descriptionDisplayTemplate;
       } else {
-        return this.#commentInputTemplateStatic;
+        return this.#descriptionInputTemplateStatic;
       }
     } else {
       return '';
@@ -79,7 +79,7 @@ export class MpImageSwticher extends HTMLElement {
         ${this.#data.type === 'remove' ? '<button class="btn remove" type="button" title="Aus der Kollektion entfernen">⬅</button>' : ''}
         <div class="body">
           <img src="${this.#data.url}" loading="lazy" alt=""/>
-          ${this.#commentTemplate}
+          ${this.#descriptionTemplate}
         </div>
         ${this.#data.type === 'insert' ? '<button class="btn insert" type="button" title="Zur Kollektion hinzufügen">➡</button>' : ''}
       </div>
@@ -98,26 +98,26 @@ export class MpImageSwticher extends HTMLElement {
         }))
       });
 
-      // Comment input and buttons
-      const commentInput = this.shadowRoot.querySelector('.input-comment');
+      // Description input and buttons
+      const descriptionInput = this.shadowRoot.querySelector('.input-description');
 
-      const btnCommentAdd = this.shadowRoot.querySelector('.btn-comment-add');
-      btnCommentAdd?.addEventListener('click', () => {
-        if (commentInput.value) {
-          this.dispatchEvent(new CustomEvent('comment:added', {
+      const btnDescriptionAdd = this.shadowRoot.querySelector('.btn-description-add');
+      btnDescriptionAdd?.addEventListener('click', () => {
+        if (descriptionInput.value) {
+          this.dispatchEvent(new CustomEvent('description:added', {
             detail: {
               url: this.#data.url,
-              comment: commentInput.value
+              description: descriptionInput.value
             },
             bubbles: true,
           }))
-          commentInput.value = '';
+          descriptionInput.value = '';
         }
       });
 
-      const btnCommentRemove = this.shadowRoot.querySelector('.btn-comment-remove');
-      btnCommentRemove?.addEventListener('click', () => {
-        this.dispatchEvent(new CustomEvent('comment:removed', {
+      const btnDescriptionRemove = this.shadowRoot.querySelector('.btn-description-remove');
+      btnDescriptionRemove?.addEventListener('click', () => {
+        this.dispatchEvent(new CustomEvent('description:removed', {
           detail: this.#data.url,
           bubbles: true,
         }))

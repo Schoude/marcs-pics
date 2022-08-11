@@ -50,6 +50,8 @@ use serde::{Deserialize, Serialize};
 pub struct SharedCollection {
     pub _id: ObjectId,
     pub photo_box_id: ObjectId,
+    // should be an Option<String>
+    // also on SharedCollectionCreate
     pub password: String,
     pub hash: String,
     pub description: String,
@@ -63,6 +65,7 @@ pub struct SharedCollection {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SharedCollectionCreate {
     pub photo_box_id: String,
+    // should be an Option<String>
     pub password: String,
     pub hash: String,
     pub description: String,
