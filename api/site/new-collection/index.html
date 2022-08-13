@@ -90,6 +90,7 @@
     import { getPhotoBoxById } from '/js/photo-box.js';
     import { generateCollectionImage } from '/js/collection-image.js';
     import { proxRender } from '/js/reactivity.js';
+    import { generateHash } from '/js/utils.js';
     await checkAuth();
 
     const queries = new URLSearchParams(window.location.search);
@@ -117,10 +118,12 @@
       // delete from object if null
       password: null,
       photo_box_id: photoBox._id.$oid,
-      hash: '0f435s4fhr8iu4', // TODO: write randomstring helper or create hash from some value
+      hash: generateHash(25),
       description: null,
       images: [],
     };
+    console.log(sharedCollection);
+
 
     // Images for the SharedCollection
     const collectionImages = proxRender([], sharedImagesContainer, (value, el) => {
