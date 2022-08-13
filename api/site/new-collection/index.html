@@ -66,6 +66,7 @@
             <input type="text" name="password" id="password">
           </label>
         </form>
+        <mp-tags-container></mp-tags-container>
         <!-- Tags anzeigen und weitere extra hinzufügen können -->
         <!-- Basis tags der Photobox bleiben immer bestehen. Es können nur weitere verändert werden. -->
         <button form="form-shared-collection">Kollektion speichern</button>
@@ -101,8 +102,11 @@
     const photoBox = await getPhotoBoxById(photoBoxId);
 
     // Elements
+    const tagsContainer = document.querySelector('mp-tags-container');
     const sourceImagesContainer = document.querySelector('.source-images-inner');
     const sharedImagesContainer = document.querySelector('.shared-images-inner');
+
+    tagsContainer.tags = photoBox.tags;
 
     const urls = proxRender([...photoBox.urls], sourceImagesContainer, (value, el) => {
       sourceImagesContainer.innerHTML = '';
