@@ -67,8 +67,6 @@
           </label>
         </form>
         <mp-tags-container></mp-tags-container>
-        <!-- Tags anzeigen und weitere extra hinzufügen können -->
-        <!-- Basis tags der Photobox bleiben immer bestehen. Es können nur weitere verändert werden. -->
         <button form="form-shared-collection">Kollektion speichern</button>
       </div>
     </section>
@@ -105,6 +103,9 @@
     const tagsContainer = document.querySelector('mp-tags-container');
     const sourceImagesContainer = document.querySelector('.source-images-inner');
     const sharedImagesContainer = document.querySelector('.shared-images-inner');
+    const descriptionEl = document.querySelector('#description');
+    const passwordEl = document.querySelector('#password');
+    const formEl = document.querySelector('#form-shared-collection');
 
     tagsContainer.tags = photoBox.tags;
 
@@ -163,7 +164,6 @@
           ? 0
           : tempCollectionImages.length - 1
       );
-      console.log(collectionImage);
       tempCollectionImages.push(collectionImage);
       collectionImages.value = tempCollectionImages;
     });
@@ -188,6 +188,29 @@
 
     window.addEventListener('description:removed', (e) => {
       console.log('description removed for image', e.detail);
+    });
+
+    descriptionEl.addEventListener('input', (e) => {
+      sharedCollection.description = e.target.value;
+    });
+
+    passwordEl.addEventListener('input', (e) => {
+      sharedCollection.password = e.target.value;
+    });
+
+    formEl.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      if (collectionImages.value.length === 0 || sharedCollection.description === '') {
+        return;
+      }
+
+      if (sharedCollection.password == null) {
+        delete sharedCollection.password;
+      }
+
+      sharedCollection.images = collectionImages.value;
+      console.log(sharedCollection);
     });
   </script>
 </body>
