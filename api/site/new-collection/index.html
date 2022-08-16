@@ -127,8 +127,6 @@
       description: null,
       images: [],
     };
-    console.log(sharedCollection);
-
 
     // Images for the SharedCollection
     const collectionImages = proxRender([], sharedImagesContainer, (value, el) => {
@@ -140,17 +138,23 @@
 
       value.forEach(collectionImage => {
         const imageSwitcher = document.createElement('mp-image-switcher');
-        imageSwitcher.data = {
+        const data = {
           url: collectionImage.url,
           type: 'remove',
         };
+
+        if (collectionImage.description != null) {
+          data.description = collectionImage.description;
+        }
+
+        imageSwitcher.data = data;
+
         el.appendChild(imageSwitcher);
       });
     });
 
     // Listeners for insert, remove and comment add / remove custom events
     window.addEventListener('image:inserted', (e) => {
-      console.log('image inserted', e.detail);
       let tempUrls = [...urls.value];
 
       tempUrls.splice(tempUrls.indexOf(e.detail), 1);
@@ -160,9 +164,6 @@
       const collectionImage = generateCollectionImage(
         e.detail,
         photoBox.tags,
-        tempCollectionImages.length === 0
-          ? 0
-          : tempCollectionImages.length - 1
       );
       tempCollectionImages.push(collectionImage);
       collectionImages.value = tempCollectionImages;
@@ -182,12 +183,15 @@
     });
 
     window.addEventListener('description:added', (e) => {
-      console.log('description added for image', e.detail.url);
-      console.log('description', e.detail.description);
+      let tempCollectionImages = [...collectionImages.value];
+      tempCollectionImages.find(img => img.url === e.detail.url).description = e.detail.description;
+      collectionImages.value = tempCollectionImages;
     });
 
     window.addEventListener('description:removed', (e) => {
-      console.log('description removed for image', e.detail);
+      let tempCollectionImages = [...collectionImages.value];
+      tempCollectionImages.find(img => img.url === e.detail.url).description = null;
+      collectionImages.value = tempCollectionImages;
     });
 
     descriptionEl.addEventListener('input', (e) => {
@@ -209,7 +213,16 @@
         delete sharedCollection.password;
       }
 
-      sharedCollection.images = collectionImages.value;
+      sharedCollection.images = collectionImages.value.map((img, index) => {
+        if (img.description == null) {
+          delete img.description;
+        }
+
+        img.order = index;
+
+        return img;
+      });
+
       console.log(sharedCollection);
     });
   </script>

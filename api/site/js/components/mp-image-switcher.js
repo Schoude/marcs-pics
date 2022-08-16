@@ -6,10 +6,10 @@ export class MpImageSwticher extends HTMLElement {
    */
   #data;
   #descriptionInputTemplateStatic = `
-    <div class="description-wrapper">
+    <form class="description-wrapper">
       <input class="input-description" type="text" placeholder="Deine Beschreibung zum Foto" />
-      <button class="btn-description-add" type="button" title="Beschreibung hinzufügen">➕</button>
-    </div>
+      <button class="btn btn-description-add" title="Beschreibung hinzufügen">➕</button>
+    </form>
   `;
 
   constructor() {
@@ -55,7 +55,7 @@ export class MpImageSwticher extends HTMLElement {
         <i>
           ${this.#data?.description}
         </i>
-        <button class="btn-description-remove" type="button" title="Beschreibung entfernen">➖</button>
+        <button class="btn btn-description-remove" type="button" title="Beschreibung entfernen">➖</button>
       </p>
     `;
   }
@@ -102,7 +102,8 @@ export class MpImageSwticher extends HTMLElement {
       const descriptionInput = this.shadowRoot.querySelector('.input-description');
 
       const btnDescriptionAdd = this.shadowRoot.querySelector('.btn-description-add');
-      btnDescriptionAdd?.addEventListener('click', () => {
+      btnDescriptionAdd?.addEventListener('click', (e) => {
+        e.preventDefault();
         if (descriptionInput.value) {
           this.dispatchEvent(new CustomEvent('description:added', {
             detail: {
@@ -118,7 +119,9 @@ export class MpImageSwticher extends HTMLElement {
       const btnDescriptionRemove = this.shadowRoot.querySelector('.btn-description-remove');
       btnDescriptionRemove?.addEventListener('click', () => {
         this.dispatchEvent(new CustomEvent('description:removed', {
-          detail: this.#data.url,
+          detail: {
+            url: this.#data.url
+          },
           bubbles: true,
         }))
       });

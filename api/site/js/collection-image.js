@@ -1,9 +1,8 @@
-export function generateCollectionImage(url, tags, order) {
+export function generateCollectionImage(url, tags) {
   return {
     url,
-    description: '',
+    description: null,
     tags,
-    order,
     comments: [],
   };
 }
