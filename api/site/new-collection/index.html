@@ -84,6 +84,8 @@
     </section>
   </div>
 
+  <mp-light-box></mp-light-box>
+
   <script type="module">
     import { checkAuth } from '/js/auth.js';
     import { getPhotoBoxById } from '/js/photo-box.js';
@@ -101,6 +103,7 @@
 
     // Elements
     const tagsContainer = document.querySelector('mp-tags-container');
+    const lightBox = document.querySelector('mp-light-box');
     const sourceImagesContainer = document.querySelector('.source-images-inner');
     const sharedImagesContainer = document.querySelector('.shared-images-inner');
     const descriptionEl = document.querySelector('#description');
@@ -192,6 +195,10 @@
       let tempCollectionImages = [...collectionImages.value];
       tempCollectionImages.find(img => img.url === e.detail.url).description = null;
       collectionImages.value = tempCollectionImages;
+    });
+
+    window.addEventListener('image:enlarge', (e) => {
+      lightBox.images = [e.detail];
     });
 
     descriptionEl.addEventListener('input', (e) => {

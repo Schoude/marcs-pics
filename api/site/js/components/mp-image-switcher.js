@@ -44,6 +44,12 @@ export class MpImageSwticher extends HTMLElement {
       img {
         display: block;
         block-size: 100px;
+        transition: transform 200ms ease;
+        transform-origin: top left;
+      }
+
+      img:hover {
+        transform: scale(3);
       }
     </style>
     `;
@@ -78,7 +84,7 @@ export class MpImageSwticher extends HTMLElement {
       <div class="wrapper">
         ${this.#data.type === 'remove' ? '<button class="btn remove" type="button" title="Aus der Kollektion entfernen">⬅</button>' : ''}
         <div class="body">
-          <img src="${this.#data.url}" loading="lazy" alt=""/>
+          <img class="image" src="${this.#data.url}" loading="lazy" alt="" title="Klicken zum größeren Anzeigen"/>
           ${this.#descriptionTemplate}
         </div>
         ${this.#data.type === 'insert' ? '<button class="btn insert" type="button" title="Zur Kollektion hinzufügen">➡</button>' : ''}
@@ -88,6 +94,14 @@ export class MpImageSwticher extends HTMLElement {
 
   #render() {
     this.shadowRoot.innerHTML = this.#template;
+
+    const imageEl = this.shadowRoot.querySelector('.image');
+    imageEl.addEventListener('click', () => {
+        this.dispatchEvent(new CustomEvent('image:enlarge', {
+          detail: this.#data.url,
+          bubbles: true,
+        }))
+    });
 
     if (this.#data.type === 'remove') {
       const btnRemove = this.shadowRoot.querySelector('.remove');
