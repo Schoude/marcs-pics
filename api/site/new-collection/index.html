@@ -139,11 +139,13 @@
         return;
       }
 
-      value.forEach(collectionImage => {
+      value.forEach((collectionImage, index) => {
         const imageSwitcher = document.createElement('mp-image-switcher');
         const data = {
           url: collectionImage.url,
           type: 'remove',
+          order: index,
+          maxCount: value.length,
         };
 
         if (collectionImage.description != null) {
@@ -194,6 +196,22 @@
     window.addEventListener('description:removed', (e) => {
       let tempCollectionImages = [...collectionImages.value];
       tempCollectionImages.find(img => img.url === e.detail.url).description = null;
+      collectionImages.value = tempCollectionImages;
+    });
+
+    window.addEventListener('order:up', (e) => {
+      let tempCollectionImages = [...collectionImages.value];
+      const foundImage = tempCollectionImages[e.detail.order];
+      tempCollectionImages.splice(e.detail.order - 1, 0, foundImage);
+      tempCollectionImages.splice(e.detail.order + 1, 1);
+      collectionImages.value = tempCollectionImages;
+    });
+
+    window.addEventListener('order:down', (e) => {
+      let tempCollectionImages = [...collectionImages.value];
+      const foundImage = tempCollectionImages[e.detail.order];
+      tempCollectionImages.splice(e.detail.order + 2, 0, foundImage);
+      tempCollectionImages.splice(e.detail.order, 1);
       collectionImages.value = tempCollectionImages;
     });
 

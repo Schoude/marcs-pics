@@ -3,6 +3,8 @@ export class MpImageSwticher extends HTMLElement {
    * type: 'insert' | 'remove'
    * url: string;
    * description?: string;
+   * order?: number;
+   * maxCount?: number;
    */
   #data;
   #descriptionInputTemplateStatic = `
@@ -46,10 +48,7 @@ export class MpImageSwticher extends HTMLElement {
         block-size: 100px;
         transition: transform 200ms ease;
         transform-origin: top left;
-      }
-
-      img:hover {
-        transform: scale(3);
+        cursor: pointer;
       }
     </style>
     `;
@@ -78,6 +77,19 @@ export class MpImageSwticher extends HTMLElement {
     }
   }
 
+  get #orderTemplate() {
+    if (this.#data.type === 'remove') {
+      return `
+        <div>
+          ${this.#data.order !== 0 ? '<button class="btn btn-order-up" type="button" title="Eine Position nach oben">⬆</button>' : ''}
+          ${this.#data.order !== this.#data.maxCount - 1 ? '<button class="btn btn-order-down" type="button" title="Eine Position nach unten">⬇</button>' : ''}
+        </div>
+      `;
+    } else {
+      return '';
+    }
+  }
+
   get #template() {
     return `
       ${this.#style}
@@ -88,6 +100,7 @@ export class MpImageSwticher extends HTMLElement {
           ${this.#descriptionTemplate}
         </div>
         ${this.#data.type === 'insert' ? '<button class="btn insert" type="button" title="Zur Kollektion hinzufügen">➡</button>' : ''}
+        ${this.#orderTemplate}
       </div>
     `;
   }
@@ -97,10 +110,10 @@ export class MpImageSwticher extends HTMLElement {
 
     const imageEl = this.shadowRoot.querySelector('.image');
     imageEl.addEventListener('click', () => {
-        this.dispatchEvent(new CustomEvent('image:enlarge', {
-          detail: this.#data.url,
-          bubbles: true,
-        }))
+      this.dispatchEvent(new CustomEvent('image:enlarge', {
+        detail: this.#data.url,
+        bubbles: true,
+      }))
     });
 
     if (this.#data.type === 'remove') {
@@ -139,6 +152,32 @@ export class MpImageSwticher extends HTMLElement {
           bubbles: true,
         }))
       });
+
+      const btnOrderUp = this.shadowRoot.querySelector('.btn-order-up');
+      if (btnOrderUp) {
+        btnOrderUp.addEventListener('click', () => {
+          this.dispatchEvent(new CustomEvent('order:up', {
+            detail: {
+              order: this.#data.order,
+              url: this.#data.url,
+            },
+            bubbles: true,
+          }));
+        });
+      }
+
+      const btnOrderDown = this.shadowRoot.querySelector('.btn-order-down');
+      if (btnOrderDown) {
+        btnOrderDown.addEventListener('click', () => {
+          this.dispatchEvent(new CustomEvent('order:down', {
+            detail: {
+              order: this.#data.order,
+              url: this.#data.url,
+            },
+            bubbles: true,
+          }));
+        });
+      }
     } else {
       const btnInsert = this.shadowRoot.querySelector('.insert');
       btnInsert.addEventListener('click', () => {
