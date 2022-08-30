@@ -50,6 +50,10 @@ export class MpImageSwticher extends HTMLElement {
         transform-origin: top left;
         cursor: pointer;
       }
+
+      input {
+        font: inherit;
+      }
     </style>
     `;
   }
