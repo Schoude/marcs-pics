@@ -92,6 +92,7 @@
     import { generateCollectionImage } from '/js/collection-image.js';
     import { proxRender } from '/js/reactivity.js';
     import { generateHash } from '/js/utils.js';
+    import { createCollection } from "/js/collection.js";
     await checkAuth();
 
     const queries = new URLSearchParams(window.location.search);
@@ -100,6 +101,7 @@
       window.location.pathname = '/';
     }
     const photoBox = await getPhotoBoxById(photoBoxId);
+    let requestLoading = false;
 
     // Elements
     const tagsContainer = document.querySelector('mp-tags-container');
@@ -227,8 +229,10 @@
       sharedCollection.password = e.target.value;
     });
 
-    formEl.addEventListener('submit', (e) => {
+    formEl.addEventListener('submit', async (e) => {
       e.preventDefault();
+      if (requestLoading) return;
+      requestLoading = true;
 
       if (collectionImages.value.length === 0 || sharedCollection.description === '') {
         return;
@@ -248,7 +252,13 @@
         return img;
       });
 
-      console.log(sharedCollection);
+      try {
+        await createCollection(sharedCollection);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        requestLoading = false;
+      }
     });
   </script>
 </body>
