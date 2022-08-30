@@ -2,6 +2,7 @@ extern crate dotenv;
 use crate::models::{
     auth::UserSession,
     photo_box::{PhotoBox, PhotoBoxUpdate},
+    shared_collection::SharedCollection,
     user::{User, UserFound, UserUpdate},
 };
 use dotenv::dotenv;
@@ -17,12 +18,14 @@ const DB_NAME: &str = "marcs_pics";
 const USER_COLLECTION_NAME: &str = "users";
 const PHOTO_BOX_COLLECTION_NAME: &str = "photo_boxes";
 const USER_SESSIONS_COLLECTION_NAME: &str = "user_sessions";
+const SHARED_COLLECTIONS_COLLECTION_NAME: &str = "shared_collections";
 
 /// Wrapper around the MongoDB client with all collections.
 pub struct MongoORM {
     user_collection: Collection<User>,
     photo_boxes_collection: Collection<PhotoBox>,
     user_sessions_collection: Collection<UserSession>,
+    shared_collections_collection: Collection<SharedCollection>,
 }
 
 impl MongoORM {
@@ -58,11 +61,14 @@ impl MongoORM {
         let photo_boxes_collection = db.collection::<PhotoBox>(PHOTO_BOX_COLLECTION_NAME);
 
         let user_sessions_collection = db.collection::<UserSession>(USER_SESSIONS_COLLECTION_NAME);
+        let shared_collections_collection =
+            db.collection::<SharedCollection>(SHARED_COLLECTIONS_COLLECTION_NAME);
 
         MongoORM {
             user_collection,
             photo_boxes_collection,
             user_sessions_collection,
+            shared_collections_collection,
         }
     }
 
@@ -297,5 +303,17 @@ impl MongoORM {
             .delete_one(doc! {"hash": hash}, None)
             .expect("Error deleting the user session.");
         Ok(delete_result)
+    }
+
+    /// Inserts a single SharedCollection.
+    pub fn create_collection(
+        &self,
+        new_collection: SharedCollection,
+    ) -> Result<InsertOneResult, Error> {
+        let inserted_collection = self
+            .shared_collections_collection
+            .insert_one(new_collection, None)
+            .expect("Error inserting the SharedCollection");
+        Ok(inserted_collection)
     }
 }

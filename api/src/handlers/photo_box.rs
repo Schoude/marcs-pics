@@ -9,7 +9,7 @@ use rocket::{http::Status, serde::json::Json, State};
 /// Adds a new `PhotoBox`.
 /// Notice that the frontend needs to send a `PhotoBoxCreate` struct.
 ///
-/// `firebase_folder_name` has to be unique.
+/// `folder_name` has to be unique.
 /// #### **ADD A UNIQUE COMPOMPOUND INDEX ON THE DATABASE COLLECTION LEVEL**
 /// #### Reference: <https://www.mongodb.com/docs/manual/core/index-unique/#unique-compound-index>
 #[post("/photo-box", format = "json", data = "<new_photo_box>")]

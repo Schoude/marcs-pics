@@ -1,5 +1,5 @@
-use super::collection_image::CollectionImage;
-use mongodb::bson::oid::ObjectId;
+use super::collection_image::{CollectionImage, CollectionImageCreate};
+use mongodb::bson::{oid::ObjectId, DateTime};
 use serde::{Deserialize, Serialize};
 
 /// MongoDB document scheme of SharedCollection
@@ -35,9 +35,9 @@ use serde::{Deserialize, Serialize};
 ///     // struct CollectionImageComment
 ///     "comments": [{
 ///       "_id": ObjectId('e0972587-5d56-4dab-a4a9-419e2222c3ec'),
-///       "creator_name": "Rainer",
-///       "creator_email": "drachenlord1488@gmx.com",
-///       "text": "Foll geile foddos etzadla heddich mal gsacht."
+///       "creator_name": "Tester",
+///       "creator_email": "t3st3r@gmx.com",
+///       "text": "Schöne Fotos!",
 ///       "created_at": UTC-Data
 ///     }],
 ///
@@ -50,13 +50,11 @@ use serde::{Deserialize, Serialize};
 pub struct SharedCollection {
     pub _id: ObjectId,
     pub photo_box_id: ObjectId,
-    // should be an Option<String>
-    // also on SharedCollectionCreate
-    pub password: String,
+    pub password: Option<String>,
     pub hash: String,
     pub description: String,
     pub images: Vec<CollectionImage>,
-    pub created_at: String,
+    pub created_at: DateTime,
 }
 
 /// Helper struct that is sent from the frontend.
@@ -65,9 +63,8 @@ pub struct SharedCollection {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SharedCollectionCreate {
     pub photo_box_id: String,
-    // should be an Option<String>
-    pub password: String,
+    pub password: Option<String>,
     pub hash: String,
     pub description: String,
-    pub images: Vec<CollectionImage>,
+    pub images: Vec<CollectionImageCreate>,
 }

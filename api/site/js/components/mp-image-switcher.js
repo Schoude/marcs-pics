@@ -2,7 +2,7 @@ export class MpImageSwticher extends HTMLElement {
   /**
    * type: 'insert' | 'remove'
    * url: string;
-   * description?: string;
+   * description: string | null;
    * order?: number;
    * maxCount?: number;
    */

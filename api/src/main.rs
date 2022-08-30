@@ -12,6 +12,7 @@ use handlers::{
     auth::{login, logout, me},
     image::{image_delete, image_upload},
     photo_box::{add_photo_box, get_all_photo_boxes, get_photo_box_by_id, update_photo_box},
+    shared_collection::add_collection,
     user::{add_user, delete_user_by_id, get_all_users, get_user_by_id, update_nickname_or_email},
 };
 use rocket::{
@@ -90,6 +91,8 @@ fn rocket() -> _ {
                 image_delete,
             ],
         )
+        // SharedCollection endpoints
+        .mount(API_BASE, routes![add_collection,])
         .register(API_BASE, catchers!(not_found))
         .manage(db)
         .mount("/", FileServer::from(relative!("site")).rank(1))

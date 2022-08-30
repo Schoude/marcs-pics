@@ -1,5 +1,5 @@
 use super::collection_image_comment::CollectionImageComment;
-use mongodb::bson::oid::ObjectId;
+use mongodb::bson::{oid::ObjectId, DateTime};
 use serde::{Deserialize, Serialize};
 
 /// MongoDB document schema for CollectionImage.
@@ -22,9 +22,9 @@ use serde::{Deserialize, Serialize};
 ///   // struct CollectionImageComment
 ///   "comments": [{
 ///     "_id": ObjectId('e0972587-5d56-4dab-a4a9-419e2222c3ec'),
-///     "creator_name": "Rainer",
-///     "creator_email": "drachenlord1488@gmx.com",
-///     "text": "Foll geile foddos etzadla heddich mal gsacht.",
+///     "creator_name": "Tester",
+///     "creator_email": "t3st3r@gmx.com",
+///     "text": "Schöne Fotos!",
 ///     "created_at": UTC-Data
 ///   }],
 ///
@@ -34,11 +34,20 @@ use serde::{Deserialize, Serialize};
 /// ```
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CollectionImage {
-    _id: ObjectId,
-    url: String,
-    description: String,
-    tags: Vec<String>,
-    order: u16,
-    comments: Vec<CollectionImageComment>,
-    created_at: String,
+    pub _id: ObjectId,
+    pub url: String,
+    pub description: Option<String>,
+    pub tags: Vec<String>,
+    pub order: u16,
+    pub comments: Vec<CollectionImageComment>,
+    pub created_at: DateTime,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct CollectionImageCreate {
+    pub url: String,
+    pub description: Option<String>,
+    pub tags: Vec<String>,
+    pub order: u16,
+    pub comments: Vec<CollectionImageComment>,
 }
