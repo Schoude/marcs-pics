@@ -17,7 +17,18 @@ async function createCollection(collection) {
   }
 }
 
+async function getCollectionByHash(hash, password = null) {
+  let url = `/api/collection?hash=${hash}`;
+
+  if (password) {
+    url = `${url}&password=${password}`;
+  }
+
+  return await fetch(url);
+}
+
 export {
   getAllCollections,
   createCollection,
+  getCollectionByHash,
 }
