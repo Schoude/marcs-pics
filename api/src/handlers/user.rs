@@ -28,7 +28,7 @@ pub fn add_user(
 
     let hashed_pw = match hash(&user.password, 4) {
         Ok(val) => val,
-        Err(_) => panic!("Error hashing to password."),
+        Err(_) => panic!("Error hashing the password."),
     };
 
     let new_user = User {

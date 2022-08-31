@@ -6,6 +6,7 @@ use crate::{
         shared_collection::{SharedCollection, SharedCollectionCreate},
     },
 };
+use bcrypt::{hash, verify};
 use mongodb::{bson::oid::ObjectId, results::InsertOneResult};
 use rocket::{http::Status, serde::json::Json, State};
 
@@ -38,14 +39,25 @@ pub fn add_collection(
         images.push(c_image);
     }
 
+    // hash the PW if it is present, otherwise return None
+    let hashed_pw = match &new_collection.password {
+        Some(val) => {
+            let hashed_pw = match hash(&val, 4) {
+                Ok(val) => val,
+                Err(_) => panic!("Error hashing the password."),
+            };
+            Some(hashed_pw)
+        }
+        None => None,
+    };
+
     let collection = SharedCollection {
         _id,
         description: new_collection.description.to_owned(),
         hash: new_collection.hash.to_owned(),
         photo_box_id: ObjectId::parse_str(&new_collection.photo_box_id).unwrap(),
         images,
-        // TODO: crypt the PW if it is present
-        password: new_collection.password.to_owned(),
+        password: hashed_pw,
         created_at: _id.timestamp(),
     };
 
@@ -70,10 +82,15 @@ pub fn get_all_collections(
 }
 
 /// Returns a single SharedCollection identified by its hash.
-#[get("/collection/<hash>")]
+/// The url patter is either
+/// `/api/collection/?hash=s2NfOpDatUXjPhqWO4joLnMIZ` without password protection
+/// or
+/// /api/collection/?hash=s2NfOpDatUXjPhqWO4joLnMIZ&password=test with password protection
+#[get("/collection?<hash>&<password>")]
 pub fn get_collection_by_hash(
     db: &State<MongoORM>,
     hash: String,
+    password: Option<String>,
 ) -> Result<(Status, Json<SharedCollection>), Status> {
     if hash.is_empty() {
         return Err(Status::BadRequest);
@@ -81,11 +98,36 @@ pub fn get_collection_by_hash(
 
     let shared_collection = db.get_collection_by_hash(&hash);
 
-    // TODO: check if the shared collection is password protected.
-    // TODO: maybe always use POST either with or without a password
+    let collection = match shared_collection {
+        Ok(shared_collection) => shared_collection,
+        Err(_) => return Err(Status::InternalServerError),
+    };
 
-    match shared_collection {
-        Ok(shared_collection) => Ok((Status::Ok, Json(shared_collection))),
-        Err(_) => Err(Status::InternalServerError),
+    let password_protected = collection.password.is_some();
+
+    println!("is password protected: {password_protected}");
+
+    if password_protected {
+        // 1) get the user password if a password is needed
+        let password = match password {
+            Some(pw) => pw,
+            None => return Err(Status::BadRequest),
+        };
+
+        // 2) get the collection password
+        let collection_password = collection.password.as_ref().unwrap();
+
+        // 3) compare both passwords
+        let res = match verify(password, collection_password) {
+            Ok(r) => r,
+            Err(_) => return Err(Status::Unauthorized),
+        };
+
+        // 4) return Unauthorized if the given password doen't match the collection password
+        if !res {
+            return Err(Status::Unauthorized);
+        }
     }
+
+    Ok((Status::Ok, Json(collection)))
 }

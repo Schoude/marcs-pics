@@ -3,4 +3,8 @@ GET http://localhost:8000/api/collections
 
 
 ### Get a SharedCollection by its hash.
-GET http://localhost:8000/api/collection/wrOUuv2qYQ6EorK8QHi6f9bHw
+GET http://localhost:8000/api/collection/?hash=R5etV2qtJ9SCsIZFV0E775N8x
+
+
+### Get a password protexted SharedCollection by its hash with password.
+GET http://localhost:8000/api/collection/?hash=s2NfOpDatUXjPhqWO4joLnMIZ&password=test
