@@ -8,6 +8,7 @@ export async function createCollection(collection) {
   });
 
   if (res.status === 201) {
+    window.history.pushState({}, document.title, '/');
     window.location.pathname = '/';
   }
 }
