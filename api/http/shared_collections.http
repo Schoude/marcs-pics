@@ -1,2 +1,6 @@
 ### Get all SharedCollections.
 GET http://localhost:8000/api/collections
+
+
+### Get a SharedCollection by its hash.
+GET http://localhost:8000/api/collection/wrOUuv2qYQ6EorK8QHi6f9bHw

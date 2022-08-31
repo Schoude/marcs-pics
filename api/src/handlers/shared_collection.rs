@@ -68,3 +68,24 @@ pub fn get_all_collections(
         Err(_) => Err(Status::InternalServerError),
     }
 }
+
+/// Returns a single SharedCollection identified by its hash.
+#[get("/collection/<hash>")]
+pub fn get_collection_by_hash(
+    db: &State<MongoORM>,
+    hash: String,
+) -> Result<(Status, Json<SharedCollection>), Status> {
+    if hash.is_empty() {
+        return Err(Status::BadRequest);
+    }
+
+    let shared_collection = db.get_collection_by_hash(&hash);
+
+    // TODO: check if the shared collection is password protected.
+    // TODO: maybe always use POST either with or without a password
+
+    match shared_collection {
+        Ok(shared_collection) => Ok((Status::Ok, Json(shared_collection))),
+        Err(_) => Err(Status::InternalServerError),
+    }
+}

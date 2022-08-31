@@ -326,4 +326,15 @@ impl MongoORM {
         let collections = collections_cursor.map(|doc| doc.unwrap()).collect();
         Ok(collections)
     }
+
+    /// Returns a single SharedCollection identified by its hash.
+    pub fn get_collection_by_hash(&self, hash: &String) -> Result<SharedCollection, Error> {
+        let filter = doc! { "hash": hash };
+        let found_collection = self
+            .shared_collections_collection
+            .find_one(filter, None)
+            .expect("Error getting the SharedCollection.")
+            .unwrap();
+        Ok(found_collection)
+    }
 }
