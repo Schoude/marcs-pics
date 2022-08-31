@@ -49,7 +49,8 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SharedCollection {
     pub _id: ObjectId,
-    pub photo_box_id: ObjectId,
+    pub photo_box_display_name: String,
+    pub photo_box_description: String,
     pub password: Option<String>,
     pub hash: String,
     pub description: String,

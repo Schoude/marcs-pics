@@ -51,11 +51,17 @@ pub fn add_collection(
         None => None,
     };
 
+    let photo_box = match db.get_photo_box_by_id(&new_collection.photo_box_id) {
+        Ok(pb) => pb,
+        Err(_) => return Err(Status::InternalServerError),
+    };
+
     let collection = SharedCollection {
         _id,
         description: new_collection.description.to_owned(),
         hash: new_collection.hash.to_owned(),
-        photo_box_id: ObjectId::parse_str(&new_collection.photo_box_id).unwrap(),
+        photo_box_display_name: photo_box.display_name,
+        photo_box_description: photo_box.description,
         images,
         password: hashed_pw,
         created_at: _id.timestamp(),
