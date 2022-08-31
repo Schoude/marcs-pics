@@ -4,6 +4,7 @@ export class MpCollectionSummary extends HTMLElement {
    * images
    * photo_box_display_name
    * photo_box_description
+   * password (hashed)
    * and more...
    */
   #data;
@@ -19,6 +20,10 @@ export class MpCollectionSummary extends HTMLElement {
   set data(value) {
     this.#data = value;
     this.#render();
+  }
+
+  get #passwordProtected() {
+    return this.#data.password != null;
   }
 
   get #style() {
@@ -42,10 +47,21 @@ export class MpCollectionSummary extends HTMLElement {
           justify-content: space-between;
         }
 
-        p {
-          margin-block-end: 0;
+        a {
+          displat: block;
+          margin-block-end: 1rem;
+          color: white;
+          text-decoration: underline;
         }
       </style>
+    `;
+  }
+
+  get #collectionLink() {
+    return `
+      <a href="${window.location}collection?hash=${this.#data.hash}" target="_blank" rel="noopener">
+        Kollektion anschauen
+      </a>
     `;
   }
 
@@ -64,6 +80,12 @@ export class MpCollectionSummary extends HTMLElement {
       <p>
         Erstellt aus Fotobox: <i>${this.#data.photo_box_display_name}</i>
       </p>
+
+      <p>
+        Passwortgeschützt? &#8210; ${this.#passwordProtected ? '<b>ja</b>' : '<b>nein</b>'}
+      </p>
+
+      ${this.#passwordProtected ? '' : this.#collectionLink}
     `;
   }
 
