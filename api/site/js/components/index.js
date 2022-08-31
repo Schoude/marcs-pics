@@ -6,3 +6,4 @@ import './mp-preview-image.js';
 import './mp-current-image.js';
 import './mp-image-switcher.js';
 import './mp-light-box.js';
+import './mp-collection-summary.js';

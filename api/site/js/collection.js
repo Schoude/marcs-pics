@@ -1,4 +1,8 @@
-export async function createCollection(collection) {
+async function getAllCollections() {
+  return await (await fetch('/api/collections')).json();
+}
+
+async function createCollection(collection) {
   const res = await fetch('/api/collection', {
     method: 'POST',
     body: JSON.stringify(collection),
@@ -11,4 +15,9 @@ export async function createCollection(collection) {
     window.history.pushState({}, document.title, '/');
     window.location.pathname = '/';
   }
+}
+
+export {
+  getAllCollections,
+  createCollection,
 }
