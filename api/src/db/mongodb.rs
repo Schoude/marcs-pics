@@ -316,4 +316,14 @@ impl MongoORM {
             .expect("Error inserting the SharedCollection");
         Ok(inserted_collection)
     }
+
+    /// Returns all SharedCollections.
+    pub fn get_all_collections(&self) -> Result<Vec<SharedCollection>, Error> {
+        let collections_cursor = self
+            .shared_collections_collection
+            .find(None, None)
+            .expect("Error getting all SharedCollection");
+        let collections = collections_cursor.map(|doc| doc.unwrap()).collect();
+        Ok(collections)
+    }
 }

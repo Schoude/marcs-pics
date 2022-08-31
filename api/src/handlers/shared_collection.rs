@@ -55,3 +55,16 @@ pub fn add_collection(
         Err(_) => Err(Status::InternalServerError),
     }
 }
+
+/// Get all SharedCollections.
+#[get("/collections")]
+pub fn get_all_collections(
+    db: &State<MongoORM>,
+    _has_session: HasSession,
+) -> Result<(Status, Json<Vec<SharedCollection>>), Status> {
+    let collections = db.get_all_collections();
+    match collections {
+        Ok(collections) => Ok((Status::Ok, Json(collections))),
+        Err(_) => Err(Status::InternalServerError),
+    }
+}

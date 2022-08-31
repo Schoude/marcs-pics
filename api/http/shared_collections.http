@@ -1,0 +1,2 @@
+### Get all SharedCollections.
+GET http://localhost:8000/api/collections
