@@ -17,22 +17,11 @@ use handlers::{
 };
 use rocket::{
     fs::{relative, FileServer, NamedFile},
-    http::Status,
-    serde::json::{json, Json, Value},
+    serde::json::{json, Value},
 };
 use std::path::Path;
 
 const API_BASE: &str = "/api";
-
-#[get("/")]
-fn hello_world() -> &'static str {
-    "Hello World"
-}
-
-#[get("/hello")]
-fn hello() -> Result<Json<String>, Status> {
-    Ok(Json(String::from("Hello from Rust with MongoDB!")))
-}
 
 /// API route not found catcher that returns a plain JSON response.
 #[catch(404)]
@@ -51,15 +40,6 @@ async fn fallback() -> Option<NamedFile> {
         .ok()
 }
 
-/// Add this route after the static file server router to have SPA fallback
-/// that redirects all unmatched routes to the SPA's index.html.
-// #[get("/<_..>", rank = 2)]
-// async fn spa_fallback() -> Option<NamedFile> {
-//     NamedFile::open(Path::new("static/").join("index.html"))
-//         .await
-//         .ok()
-// }
-
 #[launch]
 fn rocket() -> _ {
     let db = MongoORM::init();
@@ -67,7 +47,6 @@ fn rocket() -> _ {
     rocket::build()
         // auth routes
         .mount(API_BASE, routes![login, logout, me])
-        .mount(API_BASE, routes![hello_world, hello,])
         // User endpoints
         .mount(
             API_BASE,
@@ -103,8 +82,4 @@ fn rocket() -> _ {
         .mount("/storage", FileServer::from(relative!("storage")).rank(2))
         // rank = 3
         .mount("/", routes![fallback])
-    // uncomment these lines to have a static files server
-    // with SPA fallback for unmatched files that redirect to the root index.html
-    // .mount("/", FileServer::from(relative!("static")).rank(1))
-    // .mount("/", routes![spa_fallback])
 }
