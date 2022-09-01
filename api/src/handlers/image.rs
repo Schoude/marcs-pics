@@ -1,6 +1,9 @@
 use crate::{db::mongodb::MongoORM, guards::has_session::HasSession};
 use rocket::{form::Form, fs::TempFile, http::Status, State};
-use std::{fs, path::Path};
+use std::{
+    fs,
+    path::{Path, PathBuf},
+};
 use uuid::Uuid;
 
 const UPLOAD_BASE: &str = "./storage";
@@ -71,6 +74,22 @@ pub fn image_delete(id: &str, urls: &str, db: &State<MongoORM>) -> Result<Status
             Ok(_) => Ok(Status::Ok),
             Err(_) => Err(Status::InternalServerError),
         };
+
+        // Remove the directory if it is empty after the deletion of the file
+        let split = path.split('/');
+        let parts = split.collect::<Vec<&str>>();
+
+        let dir_path = format!("{}/{}", UPLOAD_BASE, parts[2]);
+        let dir_path_buf = PathBuf::from(&dir_path);
+
+        if dir_path_buf
+            .read_dir()
+            .expect("directory should exist")
+            .next()
+            .is_none()
+        {
+            fs::remove_dir(dir_path).ok();
+        }
     }
 
     result
