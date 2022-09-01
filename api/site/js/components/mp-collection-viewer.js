@@ -17,7 +17,7 @@ export class MpCollectionViewer extends HTMLElement {
   }
 
   get #mainImageDescription() {
-    return this.#mainImage.description ? this.#mainImage.description : '';
+    return this.#mainImage.description ? this.#mainImage.description : '&nbsp;';
   }
 
   get #mainImageSrc() {
@@ -31,6 +31,12 @@ export class MpCollectionViewer extends HTMLElement {
   get #style() {
     return `
       <style>
+        :host {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+        }
+        
         img {
           display: block;
         }
@@ -41,8 +47,10 @@ export class MpCollectionViewer extends HTMLElement {
         }
 
         figure img {
+          block-size: 600px;
           max-block-size: 600px;
           margin-inline: auto;
+          box-shadow: 0 0 12px black;
           transition: transform 280ms ease, box-shadow 280ms ease;
           transform-origin: top;
           position: relative;
@@ -54,14 +62,14 @@ export class MpCollectionViewer extends HTMLElement {
           box-shadow: 0 0 24px black;
         }
 
-        figure>figcaption {
+        figure > figcaption {
           margin-block-start: 1rem;
         }
 
         aside {
           display: grid;
           grid-auto-flow: column;
-          grid-auto-columns: 150px;
+          grid-auto-columns: 120px;
           column-gap: 1rem;
           overflow-x: auto;
           overscroll-behavior-inline: contain;
@@ -78,11 +86,16 @@ export class MpCollectionViewer extends HTMLElement {
 
         aside img {
           inline-size: 100%;
-          filter: grayscale(80%) blur(1px);
+          filter: grayscale(80%) blur(2px);
         }
 
         aside button {
+          background-color: transparent;
           cursor: pointer;
+          padding: 0;
+          border: none;
+          outline: none;
+          border-radius: 4px;
         }
 
         aside .main img {
@@ -98,6 +111,15 @@ export class MpCollectionViewer extends HTMLElement {
 
   #getMainImageClass(index) {
     return this.#mainImageIndex === index ? 'main' : '';
+  }
+
+  #switchMainImage(index) {
+    if (this.#mainImageIndex === index) {
+      return
+    }
+
+    this.#mainImageIndex = index;
+    this.#render();
   }
 
   get #imagesListTemplate() {
@@ -127,6 +149,10 @@ export class MpCollectionViewer extends HTMLElement {
 
   #render() {
     this.shadowRoot.innerHTML = this.#template;
+    const switchButtons = this.shadowRoot.querySelectorAll('aside button');
+    [...switchButtons].forEach((btn, index) => {
+      btn.addEventListener('click', () => this.#switchMainImage(index))
+    });
   }
 }
 
