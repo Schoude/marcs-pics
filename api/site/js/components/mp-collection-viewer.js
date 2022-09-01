@@ -64,6 +64,7 @@ export class MpCollectionViewer extends HTMLElement {
 
         figure > figcaption {
           margin-block-start: 1rem;
+          font-style: italic;
         }
 
         .image-list {
