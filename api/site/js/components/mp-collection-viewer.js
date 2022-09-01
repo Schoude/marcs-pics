@@ -1,7 +1,8 @@
 export class MpCollectionViewer extends HTMLElement {
   #collection;
   #mainImageIndex = 0;
-  
+  #scrollLeft = 0;
+
   constructor() {
     super();
     this.attachShadow({mode:'open'});
@@ -112,7 +113,7 @@ export class MpCollectionViewer extends HTMLElement {
         }
 
         .image-list > * {
-          scroll-snap-align: center;
+          scroll-snap-align: end;
         }
       </style>
     `;
@@ -126,6 +127,8 @@ export class MpCollectionViewer extends HTMLElement {
     if (this.#mainImageIndex === index) {
       return
     }
+
+    this.#scrollLeft = this.#listEl.scrollLeft;
 
     this.#mainImageIndex = index;
     this.#render();
@@ -161,17 +164,25 @@ export class MpCollectionViewer extends HTMLElement {
         </div>
         <div class="image-list">
           ${this.#imagesListTemplate}
-        <div>
+        </div>
       </aside>
     `;
+  }
+
+  get #listEl() {
+    return this.shadowRoot.querySelector('.image-list');
   }
 
   #render() {
     this.shadowRoot.innerHTML = this.#template;
     const switchButtons = this.shadowRoot.querySelectorAll('aside button');
-    [...switchButtons].forEach((btn, index) => {
+    const switchButtonsArr = [...switchButtons];
+    switchButtonsArr.forEach((btn, index) => {
       btn.addEventListener('click', () => this.#switchMainImage(index))
     });
+
+    
+    this.#listEl.scrollLeft = this.#scrollLeft;
   }
 }
 
