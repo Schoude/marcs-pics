@@ -85,7 +85,7 @@ export class MpCollectionSummary extends HTMLElement {
         Passwortgeschützt? &#8210; ${this.#passwordProtected ? '<b>ja</b>' : '<b>nein</b>'}
       </p>
 
-      ${this.#passwordProtected ? '' : this.#collectionLink}
+      ${this.#collectionLink}
     `;
   }
 
