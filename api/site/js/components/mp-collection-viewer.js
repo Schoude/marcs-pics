@@ -66,7 +66,7 @@ export class MpCollectionViewer extends HTMLElement {
           margin-block-start: 1rem;
         }
 
-        aside {
+        .image-list {
           display: grid;
           grid-auto-flow: column;
           grid-auto-columns: 120px;
@@ -78,18 +78,26 @@ export class MpCollectionViewer extends HTMLElement {
           inline-size: 800px;
           margin-inline: auto;
         }
+
+        aside {
+          display: flex;
+        }
+
+        .description {
+          flex: 0;
+        }
         
-        aside button > img {
+        .image-list button > img {
           aspect-ratio: 1/1;
           object-fit: cover;
         }
 
-        aside img {
+        .image-list img {
           inline-size: 100%;
           filter: grayscale(80%) blur(2px);
         }
 
-        aside button {
+        .image-list button {
           background-color: transparent;
           cursor: pointer;
           padding: 0;
@@ -98,11 +106,11 @@ export class MpCollectionViewer extends HTMLElement {
           border-radius: 4px;
         }
 
-        aside .main img {
+        .image-list .main img {
           filter: none;
         }
 
-        aside > * {
+        .image-list > * {
           scroll-snap-align: center;
         }
       </style>
@@ -142,7 +150,17 @@ export class MpCollectionViewer extends HTMLElement {
         </figure>
       </main>
       <aside>
-        ${this.#imagesListTemplate}
+        <div class="description">
+          <h2>
+            Beschreibung
+          </h2>
+          <p>
+            ${this.#collection.description}
+          </p>
+        </div>
+        <div class="image-list">
+          ${this.#imagesListTemplate}
+        <div>
       </aside>
     `;
   }
