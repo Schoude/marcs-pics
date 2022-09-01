@@ -13,6 +13,7 @@ const res = await getCollectionByHash(hash);
 let collection;
 if (res.status === 200) {
   collection = await res.json();
+  renderCollectionViewer()
 } else if (res.status === 401) {
   // show pw field
 } else if (res.status === 400) {
@@ -20,10 +21,11 @@ if (res.status === 200) {
   // i.e. password missing for password protected collection
 }
 
-// Elements
-const contentEl = document.querySelector('.content');
+function renderCollectionViewer() {
+  const contentEl = document.querySelector('.content');
+  contentEl.innerHTML = '';
 
-// Add the collection viewer
-const collectionViewer = document.createElement('mp-collection-viewer');
-collectionViewer.collection = collection;
-contentEl.appendChild(collectionViewer);
+  const collectionViewer = document.createElement('mp-collection-viewer');
+  collectionViewer.collection = collection;
+  contentEl.appendChild(collectionViewer);
+}
