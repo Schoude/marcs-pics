@@ -14,7 +14,7 @@ export class MpCollectionViewer extends HTMLElement {
   }
 
   get #mainImage() {
-    return this.#collection.images[this.#mainImageIndex]
+    return this.#collection.images[this.#mainImageIndex];
   }
 
   get #mainImageDescription() {
@@ -180,7 +180,6 @@ export class MpCollectionViewer extends HTMLElement {
     switchButtonsArr.forEach((btn, index) => {
       btn.addEventListener('click', () => this.#switchMainImage(index))
     });
-
     
     this.#listEl.scrollLeft = this.#scrollLeft;
   }
