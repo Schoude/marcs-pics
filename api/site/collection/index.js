@@ -20,35 +20,10 @@ if (res.status === 200) {
   // i.e. password missing for password protected collection
 }
 
-console.log(collection);
-
-// TODO: put this in one ore more web components
 // Elements
-const mainImageFigure = document.querySelector('figure');
-const asideImageContainer = document.querySelector('aside');
+const contentEl = document.querySelector('.content');
 
-// 2) render the images
-const mainImageEl = document.createElement('img');
-const mainImage = collection.images[0];
-
-mainImageEl.setAttribute('loading', 'lazy');
-mainImageEl.setAttribute('src', mainImage.url);
-mainImageFigure.appendChild(mainImageEl);
-
-if (mainImage.description) {
-  const mainImageCaption = document.createElement('figcaption');
-  mainImageCaption.innerText = mainImage.description
-  mainImageFigure.appendChild(mainImageCaption);
-}
-
-// 2.2) render the horizontal image list in the aside
-collection.images.forEach(image => {
-  const imgageEl = document.createElement('img');
-  imgageEl.setAttribute('loading', 'lazy');
-  imgageEl.setAttribute('src', image.url);
-
-  if (image.description) {
-    imgageEl.setAttribute('alt', image.description);
-  }
-  asideImageContainer.appendChild(imgageEl);
-});
+// Add the collection viewer
+const collectionViewer = document.createElement('mp-collection-viewer');
+collectionViewer.collection = collection;
+contentEl.appendChild(collectionViewer);
