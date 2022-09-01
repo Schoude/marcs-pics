@@ -20,9 +20,16 @@ button {
   cursor: pointer;
 }
 
-input {
+input,
+textarea {
   font: inherit;
   padding: .5rem .75rem;
+}
+
+textarea {
+  block-size: 50px;
+  inline-size: 300px;
+  resize: none;
 }
 
 fieldset {
