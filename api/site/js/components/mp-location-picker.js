@@ -27,9 +27,36 @@ export class MpLocationPicker extends HTMLElement {
   get #style() {
     return `
     <style>
+      .map-wrapper {
+        position: relative;
+        inline-size: max-content;
+        margin-inline: auto;
+      }
+
       #map {
-        inline-size: 800px;
-        block-size: 600px;
+        aspect-ratio: 16 / 9;
+        inline-size: 1200px;
+      }
+
+      #search {
+        position: absolute;
+        inset-block-start: 1%;
+        inset-inline-start: 50%;
+        translate: -50%;
+        z-index: 400;
+      }
+
+      #search input {
+        border: none;
+        border-radius: 6px;
+        padding: .5rem;
+        box-shadow: 0 6px 12px -3px rgba(0, 0 ,0, .33);
+        transition: box-shadow 300ms ease;
+        outline: none;
+      }
+
+      #search input:focus {
+        box-shadow: 0 6px 16px -3px rgba(0, 0 ,0, .63);
       }
     </style>
     `;
@@ -38,7 +65,12 @@ export class MpLocationPicker extends HTMLElement {
   get #template() {
     return `
       ${this.#style}
-      <div id="map">
+      <div class="map-wrapper">
+        <div id="map">
+        </div>
+        <form id="search">
+          <input type="text" placeholder="Berlin" title="Geben Sie eine Stadt ein, nach der Sie suchen möchten." />
+        </form>
       </div>
     `;
   }
