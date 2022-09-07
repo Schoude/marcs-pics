@@ -31,6 +31,7 @@ export class MpLocationPicker extends HTMLElement {
         position: relative;
         inline-size: max-content;
         margin-inline: auto;
+        overflow: hidden;
       }
 
       #map {
@@ -58,6 +59,25 @@ export class MpLocationPicker extends HTMLElement {
       #search input:focus {
         box-shadow: 0 6px 16px -3px rgba(0, 0 ,0, .63);
       }
+
+      .search-results-container {
+        position: absolute;
+        inset-block: 0;
+        inset-inline-end: 0;
+        z-index: 400;
+        inline-size: 25%;
+        background-color: white;
+        transition: translate 300ms ease;
+      }
+
+      .search-results-container.closed {
+        translate: 100%;
+      }
+
+      .search-results-container header {
+        display: flex;
+        justify-content: end;
+      }
     </style>
     `;
   }
@@ -71,6 +91,11 @@ export class MpLocationPicker extends HTMLElement {
         <form id="search">
           <input type="text" placeholder="Berlin" title="Geben Sie eine Stadt ein, nach der Sie suchen möchten." />
         </form>
+        <aside class="search-results-container">
+          <header>
+            <button type="button" class="search-results-close" title="Suchergebnisse schließen">✖</button>
+          </header>
+        </aside>
       </div>
     `;
   }
@@ -81,6 +106,13 @@ export class MpLocationPicker extends HTMLElement {
 
   #render() {
     this.innerHTML = this.#template;
+    const searchResultsContainer = this.querySelector('.search-results-container');
+    const searchResultsCloseBtn = this.querySelector('.search-results-close');
+
+    searchResultsCloseBtn.addEventListener('click', () => {
+      searchResultsContainer.classList.add('closed');
+      searchResultsContainer.setAttribute('inert', '');
+    });
   }
 }
 
