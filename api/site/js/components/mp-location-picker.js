@@ -1,11 +1,13 @@
 export class MpLocationPicker extends HTMLElement {
   #map = null;
   #position = [49.00875078131351, 8.393200635910036];
-  #minZoom = 5;
+  #minZoom = 2;
   #maxZoom = 19;
   // https://wiki.openstreetmap.org/wiki/Tile_servers
   #tileURL = 'https://tile.openstreetmap.de/{z}/{x}/{y}.png';
   #nominatimURL = 'https://nominatim.openstreetmap.org/search?format=json&polygon=1&addressdetails=1&q=';
+  #searchResults = [];
+  #overviewPosition = [20.13847, 1.40625];
 
   constructor() {
     // console.warn('Don\'t forget to include the JS and CSS files for Leaflet in the HTML head where you use this component. See the available downloads here: https://leafletjs.com/download.html');
@@ -44,7 +46,7 @@ export class MpLocationPicker extends HTMLElement {
         inset-block-start: 1%;
         inset-inline-start: 50%;
         translate: -50%;
-        z-index: 400;
+        z-index: 401;
       }
 
       #search input {
@@ -65,9 +67,14 @@ export class MpLocationPicker extends HTMLElement {
         inset-block: 0;
         inset-inline-end: 0;
         z-index: 400;
-        inline-size: 25%;
-        background-color: white;
+        inline-size: 33%;
+        background-color: hsl(0deg 0% 100% / 54%);
         transition: translate 300ms ease;
+        color: black;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 0 12px 0px rgba(0, 0 ,0, .33);
+        z-index: 1000;
       }
 
       .search-results-container.closed {
@@ -77,6 +84,51 @@ export class MpLocationPicker extends HTMLElement {
       .search-results-container header {
         display: flex;
         justify-content: end;
+        flex: 0;
+        padding: 1rem;
+      }
+
+      .search-results {
+        overflow-y: auto;
+        word-break: break-word;
+        flex: 1;
+        min-block-size: 0;
+        margin: 0;
+        padding-block-start: 1rem;
+        padding-block-end: 2.5rem;
+        padding-inline: 1rem;
+        list-style: none;
+      }
+
+      .search-results > li + li {
+        margin-block-start: 1rem;
+      }
+
+      .search-results > li {
+        transition: background-color 200ms ease;
+        padding: 1rem;
+        border-radius: 6px;
+        border: 1px solid hsl(0 0% 75%);
+      }
+
+      .search-results > li:hover {
+        background-color: white;
+      }
+
+      /* scrollbar styles */
+      .styled-scrollbars {
+        /* Foreground, Background */
+        scrollbar-color: #999 #333;
+      }
+      .styled-scrollbars::-webkit-scrollbar {
+        width: 10px; /* Mostly for vertical scrollbars */
+        height: 10px; /* Mostly for horizontal scrollbars */
+      }
+      .styled-scrollbars::-webkit-scrollbar-thumb { /* Foreground */
+        background: #999;
+      }
+      .styled-scrollbars::-webkit-scrollbar-track { /* Background */
+        background: #333;
       }
     </style>
     `;
@@ -86,32 +138,75 @@ export class MpLocationPicker extends HTMLElement {
     return `
       ${this.#style}
       <div class="map-wrapper">
-        <div id="map">
-        </div>
         <form id="search">
-          <input type="text" placeholder="Berlin" title="Geben Sie eine Stadt ein, nach der Sie suchen möchten." />
+          <input type="text" name="query" placeholder="Berlin" title="Geben Sie eine Stadt ein, nach der Sie suchen möchten." />
         </form>
-        <aside class="search-results-container">
+
+        <div id="map"></div>
+
+        <aside class="search-results-container closed" inert>
           <header>
-            <button type="button" class="search-results-close" title="Suchergebnisse schließen">✖</button>
+            <button type="button" class="search-results-close" title="Suchergebnisse löschen & schließen">✖</button>
           </header>
+          <ul class="search-results styled-scrollbars"></ul>
         </aside>
       </div>
     `;
   }
 
   #logCoords(e) {
-    console.log(e.latlng);
+    // console.log(e.latlng);
   }
 
   #render() {
     this.innerHTML = this.#template;
+
+    const searchForm = document.querySelector('#search');
+    const searchFormInput = document.querySelector('#search > input[type="text"]');
     const searchResultsContainer = this.querySelector('.search-results-container');
+    const searchResults = this.querySelector('.search-results');
     const searchResultsCloseBtn = this.querySelector('.search-results-close');
+
+    searchForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (searchForm.elements.query.value === '') {
+        return;
+      }
+      const query = searchForm.elements.query.value.toLowerCase();
+      searchForm.elements.query.setAttribute('disabled', '');
+      try {
+        searchResults.innerText = '';
+        this.#searchResults = await (await fetch(`${this.#nominatimURL}${query}`)).json();
+        searchResultsContainer.removeAttribute('inert');
+        searchResultsContainer.classList.remove('closed');
+        console.log(this.#searchResults);
+
+        if (this.#searchResults.length === 0) {
+          searchResults.innerText = 'Keine Ergebnisse gefunden...!';
+          return;
+        }
+
+        this.#searchResults.forEach(res => {
+          const listItem = document.createElement('li');
+          listItem.textContent = listItem.textContent + res.display_name;
+          listItem.textContent = listItem.textContent + `; [${res.lat}, ${res.lon}]`;
+          searchResults.appendChild(listItem);
+        });
+
+        this.#map.flyTo(this.#overviewPosition, this.#minZoom);
+      } catch (error) {
+        console.log(error.message);
+      } finally {
+        searchForm.elements.query.removeAttribute('disabled');
+      }
+    });
 
     searchResultsCloseBtn.addEventListener('click', () => {
       searchResultsContainer.classList.add('closed');
       searchResultsContainer.setAttribute('inert', '');
+      searchFormInput.value = '';
+      searchResults.innerText = '';
+      this.#searchResults = [];
     });
   }
 }
