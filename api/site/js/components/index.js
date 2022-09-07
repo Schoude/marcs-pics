@@ -8,3 +8,4 @@ import './mp-image-switcher.js';
 import './mp-light-box.js';
 import './mp-collection-summary.js';
 import './mp-collection-viewer.js';
+import './mp-location-picker.js';
