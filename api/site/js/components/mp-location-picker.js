@@ -12,7 +12,9 @@ export class MpLocationPicker extends HTMLElement {
   #currentMarkers = [];
 
   constructor() {
-    // console.warn('Don\'t forget to include the JS and CSS files for Leaflet in the HTML head where you use this component. See the available downloads here: https://leafletjs.com/download.html');
+    if (window.L == null) {
+      console.error('Don\'t forget to include the JS and CSS files for Leaflet in the HTML head where you use this component. See the available downloads here: https://leafletjs.com/download.html');
+    }
 
     super();
     this.#render();
@@ -108,17 +110,19 @@ export class MpLocationPicker extends HTMLElement {
 
       .search-results > li {
         background-color: hsl(0deg 0% 100% / 60%);
-        transition: background-color 200ms ease;
+        transition: background-color 200ms ease, border-color 200ms ease;
         padding: 1rem;
         border-radius: 6px;
-        border: 1px solid hsl(0 0% 75%);
+        border: 1px solid hsl(0 0% 85%);
         cursor: pointer;
       }
 
       .search-results > li:hover,
       .search-results > li.active {
         background-color: white;
+        border: 1px solid hsl(0 0% 55%);
       }
+
       .leaflet-marker-icon.active {
         filter: hue-rotate(90deg);
       }
