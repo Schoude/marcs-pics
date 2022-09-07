@@ -2,19 +2,21 @@ export class MpLocationPicker extends HTMLElement {
   #map = null;
   #position = [49.00875078131351, 8.393200635910036];
   #minZoom = 2;
+  #startingZoom = 13;
   #maxZoom = 19;
   // https://wiki.openstreetmap.org/wiki/Tile_servers
   #tileURL = 'https://tile.openstreetmap.de/{z}/{x}/{y}.png';
   #nominatimURL = 'https://nominatim.openstreetmap.org/search?format=json&polygon=1&addressdetails=1&q=';
   #searchResults = [];
   #overviewPosition = [20.13847, 1.40625];
+  #currentMarkers = [];
 
   constructor() {
     // console.warn('Don\'t forget to include the JS and CSS files for Leaflet in the HTML head where you use this component. See the available downloads here: https://leafletjs.com/download.html');
 
     super();
     this.#render();
-    this.#map = L.map('map').setView(this.#position, this.#maxZoom);
+    this.#map = L.map('map').setView(this.#position, this.#startingZoom);
     L.tileLayer(this.#tileURL, {
       maxZoom: this.#maxZoom,
       minZoom: this.#minZoom,
@@ -105,14 +107,20 @@ export class MpLocationPicker extends HTMLElement {
       }
 
       .search-results > li {
+        background-color: hsl(0deg 0% 100% / 60%);
         transition: background-color 200ms ease;
         padding: 1rem;
         border-radius: 6px;
         border: 1px solid hsl(0 0% 75%);
+        cursor: pointer;
       }
 
-      .search-results > li:hover {
+      .search-results > li:hover,
+      .search-results > li.active {
         background-color: white;
+      }
+      .leaflet-marker-icon.active {
+        filter: hue-rotate(90deg);
       }
 
       /* scrollbar styles */
@@ -158,6 +166,19 @@ export class MpLocationPicker extends HTMLElement {
     // console.log(e.latlng);
   }
 
+  #removeMarkers() {
+    this.#currentMarkers.forEach(marker => {
+      this.#map.removeLayer(marker);
+    });
+    this.#currentMarkers = [];
+  }
+
+  #clearMarkerClasses() {
+    this.#currentMarkers.forEach(marker => {
+      marker.getElement().classList.remove('active');
+    });
+  }
+
   #render() {
     this.innerHTML = this.#template;
 
@@ -175,7 +196,13 @@ export class MpLocationPicker extends HTMLElement {
       const query = searchForm.elements.query.value.toLowerCase();
       searchForm.elements.query.setAttribute('disabled', '');
       try {
+        // Clear the resulsts list
+        // TODO: remove click event listeners on the list items
         searchResults.innerText = '';
+        // remove the previous markers
+        // TODO: remove click event listeners on the markers
+        this.#removeMarkers();
+
         this.#searchResults = await (await fetch(`${this.#nominatimURL}${query}`)).json();
         searchResultsContainer.removeAttribute('inert');
         searchResultsContainer.classList.remove('closed');
@@ -186,11 +213,43 @@ export class MpLocationPicker extends HTMLElement {
           return;
         }
 
-        this.#searchResults.forEach(res => {
+        this.#searchResults.forEach((res, index) => {
           const listItem = document.createElement('li');
+          const position = [res.lat, res.lon];
           listItem.textContent = listItem.textContent + res.display_name;
           listItem.textContent = listItem.textContent + `; [${res.lat}, ${res.lon}]`;
           searchResults.appendChild(listItem);
+
+          // add the markers
+          const marker = new L.marker(position).addTo(this.#map);
+          marker.on('click', () => {
+            this.#clearMarkerClasses();
+            marker.getElement().classList.add('active');
+
+            for (const child of searchResults.children) {
+              child.classList.remove('active');
+            }
+            const foundEl = [...searchResults.children].find((el, idx) => index === idx);
+            foundEl.classList.add('active');
+            foundEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            this.#map.flyTo(marker.getLatLng(), 7);
+          });
+          this.#currentMarkers.push(marker);
+
+          // add the click event to fly to the location
+          listItem.addEventListener('click', (e) => {
+            for (const child of searchResults.children) {
+              child.classList.remove('active');
+            }
+            e.currentTarget.classList.add('active');
+            e.currentTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            this.#clearMarkerClasses();
+            const foundMarker = this.#currentMarkers.find((_marker, idx) => index === idx);
+            foundMarker.getElement().classList.add('active');
+
+            this.#map.flyTo(position, 13);
+          });
         });
 
         this.#map.flyTo(this.#overviewPosition, this.#minZoom);
@@ -207,6 +266,8 @@ export class MpLocationPicker extends HTMLElement {
       searchFormInput.value = '';
       searchResults.innerText = '';
       this.#searchResults = [];
+      this.#removeMarkers();
+      this.#map.flyTo(this.#overviewPosition, this.#minZoom);
     });
   }
 }
