@@ -39,6 +39,9 @@
   <script>
     const map = document.createElement('mp-location-picker');
     document.body.appendChild(map);
+    map.addEventListener('update:position', (e) => {
+      console.log(e.detail);
+    });
   </script>
 </body>
 

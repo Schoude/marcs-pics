@@ -10,6 +10,8 @@ export class MpLocationPicker extends HTMLElement {
   #searchResults = [];
   #overviewPosition = [20.13847, 1.40625];
   #currentMarkers = [];
+  #selectedPosition = null;
+  #selectedPositionPopup = null;
 
   constructor() {
     if (window.L == null) {
@@ -27,7 +29,7 @@ export class MpLocationPicker extends HTMLElement {
   }
 
   connectedCallback() {
-    this.#map.on('click', this.#logCoords);
+    this.#map.on('click', this.#updatePosition.bind(this));
   }
 
   get #style() {
@@ -38,6 +40,7 @@ export class MpLocationPicker extends HTMLElement {
         inline-size: max-content;
         margin-inline: auto;
         overflow: hidden;
+        --border-radius: 6px;
       }
 
       #map {
@@ -55,7 +58,7 @@ export class MpLocationPicker extends HTMLElement {
 
       #search input {
         border: none;
-        border-radius: 6px;
+        border-radius: var(--border-radius);
         padding: .5rem;
         box-shadow: 0 6px 12px -3px rgba(0, 0 ,0, .33);
         transition: box-shadow 300ms ease;
@@ -112,7 +115,7 @@ export class MpLocationPicker extends HTMLElement {
         background-color: hsl(0deg 0% 100% / 60%);
         transition: background-color 200ms ease, border-color 200ms ease;
         padding: 1rem;
-        border-radius: 6px;
+        border-radius: var(--border-radius);
         border: 1px solid hsl(0 0% 85%);
         cursor: pointer;
       }
@@ -123,8 +126,16 @@ export class MpLocationPicker extends HTMLElement {
         border: 1px solid hsl(0 0% 55%);
       }
 
+      .leaflet-container {
+        font-family: inherit;
+      }
+
       .leaflet-marker-icon.active {
         filter: hue-rotate(90deg);
+      }
+
+      .leaflet-popup-content-wrapper {
+        border-radius: var(--border-radius)
       }
 
       /* scrollbar styles */
@@ -166,8 +177,28 @@ export class MpLocationPicker extends HTMLElement {
     `;
   }
 
-  #logCoords(e) {
-    // console.log(e.latlng);
+  #updatePosition(e) {
+    if (this.#selectedPositionPopup) {
+      this.#map.removeLayer(this.#selectedPositionPopup);
+    }
+
+    this.#selectedPosition = e.latlng;
+
+    this.#selectedPositionPopup = L.popup()
+      .setLatLng(this.#selectedPosition)
+      .setContent(`<h3>Ausgewählte Fotoposition:</h3><div>Breite: ${this.#selectedPosition.lat}</div><div>Länge: ${this.#selectedPosition.lng}</div>`)
+      .openOn(this.#map);
+  
+    this.#selectedPositionPopup.on('remove', () => {
+      this.#selectedPosition = null
+      this.dispatchEvent(new CustomEvent('update:position', {
+        detail: this.#selectedPosition,
+      }));
+    });
+
+    this.dispatchEvent(new CustomEvent('update:position', {
+      detail: this.#selectedPosition,
+    }));
   }
 
   #removeMarkers() {
