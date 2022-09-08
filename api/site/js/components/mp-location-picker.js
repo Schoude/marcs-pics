@@ -32,6 +32,12 @@ export class MpLocationPicker extends HTMLElement {
     this.#map.on('click', this.#updatePosition.bind(this));
   }
 
+  #emit(evtName, payload) {
+    this.dispatchEvent(new CustomEvent(evtName, {
+      detail: payload,
+    }));
+  }
+
   get #style() {
     return `
     <style>
@@ -179,9 +185,7 @@ export class MpLocationPicker extends HTMLElement {
   }
 
   #updatePosition(e) {
-    if (this.#selectedPositionPopup) {
-      this.#map.removeLayer(this.#selectedPositionPopup);
-    }
+    this.#removePositionPopup();
 
     this.#selectedPosition = e.latlng;
 
@@ -191,15 +195,11 @@ export class MpLocationPicker extends HTMLElement {
       .openOn(this.#map);
   
     this.#selectedPositionPopup.on('remove', () => {
-      this.#selectedPosition = null
-      this.dispatchEvent(new CustomEvent('update:position', {
-        detail: this.#selectedPosition,
-      }));
+      this.#selectedPosition = null;
+      this.#emit('update:position', this.#selectedPosition);
     });
 
-    this.dispatchEvent(new CustomEvent('update:position', {
-      detail: this.#selectedPosition,
-    }));
+    this.#emit('update:position', this.#selectedPosition);
   }
 
   #removeMarkers() {
@@ -213,6 +213,12 @@ export class MpLocationPicker extends HTMLElement {
     this.#currentMarkers.forEach(marker => {
       marker.getElement().classList.remove('active');
     });
+  }
+
+  #removePositionPopup() {
+    if (this.#selectedPositionPopup) {
+      this.#map.removeLayer(this.#selectedPositionPopup);
+    }
   }
 
   #render() {
@@ -284,6 +290,9 @@ export class MpLocationPicker extends HTMLElement {
             const foundMarker = this.#currentMarkers.find((_marker, idx) => index === idx);
             foundMarker.getElement().classList.add('active');
 
+            this.#selectedPosition = {lat: +res.lat, lng: +res.lon};
+            this.#removePositionPopup();
+            this.#emit('update:position', {lat: +res.lat, lng: +res.lon});
             this.#map.flyTo(position, 13);
           });
         });
@@ -302,8 +311,10 @@ export class MpLocationPicker extends HTMLElement {
       searchFormInput.value = '';
       searchResults.innerText = '';
       this.#searchResults = [];
+      this.#selectedPosition = null;
       this.#removeMarkers();
       this.#map.flyTo(this.#overviewPosition, this.#minZoom);
+      this.#emit('update:position', this.#selectedPosition);
     });
   }
 }
