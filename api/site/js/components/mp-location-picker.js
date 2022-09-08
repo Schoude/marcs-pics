@@ -40,6 +40,7 @@ export class MpLocationPicker extends HTMLElement {
         inline-size: max-content;
         margin-inline: auto;
         overflow: hidden;
+        border-radius: var(--mp-border-radius-wrapper, 0px);
         --border-radius: 6px;
       }
 
