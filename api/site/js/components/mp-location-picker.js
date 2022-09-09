@@ -248,7 +248,7 @@ export class MpLocationPicker extends HTMLElement {
     this.innerHTML = this.#template;
 
     const searchForm = this.querySelector('#search');
-    const searchFormInput = this.querySelector('#search > input[type="text"]');
+    const searchFormInput = this.querySelector('#search input[type="text"]');
     const searchResultsContainer = this.querySelector('.search-results-container');
     const searchResultsContainerToggle = this.querySelector('.side-menu-toggle');
     const searchResults = this.querySelector('.search-results');
