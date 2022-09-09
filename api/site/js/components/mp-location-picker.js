@@ -63,16 +63,26 @@ export class MpLocationPicker extends HTMLElement {
         z-index: 401;
       }
 
-      #search input {
-        border: none;
+      #search > label {
         border-radius: var(--border-radius);
-        padding: .5rem;
         box-shadow: 0 6px 12px -3px rgba(0, 0 ,0, .33);
         transition: box-shadow 300ms ease;
-        outline: none;
+        background-color: white;
+        display: flex;
+        padding-inline-start: .5rem;
+        cursor: text;
       }
 
-      #search input:focus {
+      #search input {
+        border: none;
+        padding: .5rem;
+        outline: none;
+        background-color: transparent;
+        border-start-end-radius: var(--border-radius);
+        border-end-end-radius: var(--border-radius);
+      }
+
+      #search:focus-within {
         box-shadow: 0 6px 16px -3px rgba(0, 0 ,0, .63);
       }
 
@@ -178,7 +188,10 @@ export class MpLocationPicker extends HTMLElement {
       ${this.#style}
       <div class="map-wrapper">
         <form id="search">
-          <input type="text" name="query" placeholder="Berlin" title="Geben Sie eine Stadt ein, nach der Sie suchen möchten." />
+          <label>
+            <mp-icon icon-name="search"></mp-icon>
+            <input type="text" name="query" placeholder="Berlin" title="Geben Sie eine Stadt ein, nach der Sie suchen möchten." />
+          </label>
         </form>
 
         <div id="map"></div>
