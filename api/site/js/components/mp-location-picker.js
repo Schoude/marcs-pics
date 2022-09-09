@@ -102,6 +102,14 @@ export class MpLocationPicker extends HTMLElement {
         padding: 1rem;
       }
 
+      .search-results-container .side-menu-toggle {
+        position: absolute;
+        inset-block-start: 5%;
+        inset-inline-start: 0;
+        translate: -100%;
+        block-size: 50px;
+      }
+
       .search-results {
         overflow-y: auto;
         word-break: break-word;
@@ -133,6 +141,7 @@ export class MpLocationPicker extends HTMLElement {
         border: 1px solid hsl(0 0% 55%);
       }
 
+      button,
       .leaflet-container {
         font-family: inherit;
       }
@@ -174,11 +183,12 @@ export class MpLocationPicker extends HTMLElement {
 
         <div id="map"></div>
 
-        <aside class="search-results-container closed" inert>
+        <aside class="search-results-container closed">
           <header>
-            <button type="button" class="search-results-close" title="Suchergebnisse löschen & schließen">✖</button>
+            <button type="button" class="search-results-delete">💥Suchergebnisse löschen</button>
           </header>
           <ul class="search-results styled-scrollbars"></ul>
+          <button type="button" class="side-menu-toggle">↔</button>
         </aside>
       </div>
     `;
@@ -193,7 +203,7 @@ export class MpLocationPicker extends HTMLElement {
       .setLatLng(this.#selectedPosition)
       .setContent(`<h3>Ausgewählte Fotoposition:</h3><div>Breite: ${this.#selectedPosition.lat}</div><div>Länge: ${this.#selectedPosition.lng}</div>`)
       .openOn(this.#map);
-  
+
     this.#selectedPositionPopup.on('remove', () => {
       this.#selectedPosition = null;
       this.#emit('update:position', this.#selectedPosition);
@@ -224,11 +234,12 @@ export class MpLocationPicker extends HTMLElement {
   #render() {
     this.innerHTML = this.#template;
 
-    const searchForm = document.querySelector('#search');
-    const searchFormInput = document.querySelector('#search > input[type="text"]');
+    const searchForm = this.querySelector('#search');
+    const searchFormInput = this.querySelector('#search > input[type="text"]');
     const searchResultsContainer = this.querySelector('.search-results-container');
+    const searchResultsContainerToggle = this.querySelector('.side-menu-toggle');
     const searchResults = this.querySelector('.search-results');
-    const searchResultsCloseBtn = this.querySelector('.search-results-close');
+    const searchResultsDeleteBtn = this.querySelector('.search-results-delete');
 
     searchForm.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -271,8 +282,19 @@ export class MpLocationPicker extends HTMLElement {
             for (const child of searchResults.children) {
               child.classList.remove('active');
             }
+
             const foundEl = [...searchResults.children].find((el, idx) => index === idx);
             foundEl.classList.add('active');
+
+            if (searchResultsContainer.classList.contains('closed')) {
+              searchResultsContainer.classList.toggle('closed');
+              setTimeout(() => {
+                foundEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }, 1000);
+            } else {
+              foundEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+
             foundEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
             this.#map.flyTo(marker.getLatLng(), 7);
@@ -289,10 +311,6 @@ export class MpLocationPicker extends HTMLElement {
             this.#clearMarkerClasses();
             const foundMarker = this.#currentMarkers.find((_marker, idx) => index === idx);
             foundMarker.getElement().classList.add('active');
-
-            this.#selectedPosition = {lat: +res.lat, lng: +res.lon};
-            this.#removePositionPopup();
-            this.#emit('update:position', {lat: +res.lat, lng: +res.lon});
             this.#map.flyTo(position, 13);
           });
         });
@@ -305,9 +323,7 @@ export class MpLocationPicker extends HTMLElement {
       }
     });
 
-    searchResultsCloseBtn.addEventListener('click', () => {
-      searchResultsContainer.classList.add('closed');
-      searchResultsContainer.setAttribute('inert', '');
+    searchResultsDeleteBtn.addEventListener('click', () => {
       searchFormInput.value = '';
       searchResults.innerText = '';
       this.#searchResults = [];
@@ -315,6 +331,10 @@ export class MpLocationPicker extends HTMLElement {
       this.#removeMarkers();
       this.#map.flyTo(this.#overviewPosition, this.#minZoom);
       this.#emit('update:position', this.#selectedPosition);
+    });
+
+    searchResultsContainerToggle.addEventListener('click', () => {
+      searchResultsContainer.classList.toggle('closed');
     });
   }
 }
