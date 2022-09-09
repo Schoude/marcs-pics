@@ -151,6 +151,12 @@ export class MpLocationPicker extends HTMLElement {
         border: 1px solid hsl(0 0% 55%);
       }
 
+      .search-results-delete {
+        display: flex;
+        align-items: center;
+        gap: 1ex;
+      }
+
       button,
       .leaflet-container {
         font-family: inherit;
@@ -198,7 +204,10 @@ export class MpLocationPicker extends HTMLElement {
 
         <aside class="search-results-container closed">
           <header>
-            <button type="button" class="search-results-delete">💥Suchergebnisse löschen</button>
+            <button type="button" class="search-results-delete">
+              Suchergebnisse löschen
+              <mp-icon icon-name="delete" width="20px" color="crimson"></mp-icon>
+            </button>
           </header>
           <ul class="search-results styled-scrollbars"></ul>
           <button type="button" class="side-menu-toggle">↔</button>
