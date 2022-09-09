@@ -118,6 +118,20 @@ export class MpLocationPicker extends HTMLElement {
         inset-inline-start: 0;
         translate: -100%;
         block-size: 50px;
+        padding-inline: .33ex;
+        border: none;
+        background-color: hsl(0 0% 75% / 54%);
+        border-top: 1px solid black;
+        border-bottom: 1px solid black;
+        border-left: 1px solid black;
+        border-start-start-radius: var(--border-radius);
+        border-end-start-radius: var(--border-radius);
+        transition: background-color 200ms ease, border-color 200ms ease;
+      }
+
+      .search-results-container .side-menu-toggle:hover,
+      .search-results-container .side-menu-toggle:focus-visible {
+        background-color: hsl(0 0% 85% / 70%);
       }
 
       .search-results {
@@ -210,7 +224,9 @@ export class MpLocationPicker extends HTMLElement {
             </button>
           </header>
           <ul class="search-results styled-scrollbars"></ul>
-          <button type="button" class="side-menu-toggle">↔</button>
+          <button type="button" class="side-menu-toggle">
+            <mp-icon icon-name="arrowLeftRight" width="16px"></mp-icon>
+          </button>
         </aside>
       </div>
     `;
