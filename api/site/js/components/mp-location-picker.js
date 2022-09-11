@@ -277,6 +277,47 @@ export class MpLocationPicker extends HTMLElement {
     this.#currentPolygons = [];
   }
 
+  /**
+   * @param {'Polygon' 'MultiPolygon' 'LineString', 'Point'} type
+   */
+  #sanitizeGeojsonData(type, data) {
+    switch (type) {
+      case 'Polygon': {
+        return data.map(shape => {
+          return shape.map(s => {
+            const lng = s[0];
+            const lat = s[1];
+            return [lat, lng];
+          })
+        });
+      }
+
+      case 'MultiPolygon': {
+        return data.map(outerShape => {
+          return outerShape.map(innerShape => {
+            return innerShape.map(s => {
+              const lng = s[0];
+              const lat = s[1];
+              return [lat, lng];
+            })
+          })
+        });
+      }
+
+      case 'LineString': {
+        return [];
+      }
+
+      case 'Point': {
+        return [];
+      }
+
+      default: {
+        return [];
+      }
+    }
+  }
+
   #render() {
     this.innerHTML = this.#template;
 
@@ -343,13 +384,13 @@ export class MpLocationPicker extends HTMLElement {
 
             foundEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
+            this.#removePolygons();
             const polygon = L.polygon(
-              res.geojson.coordinates,
+              this.#sanitizeGeojsonData(res.geojson.type, res.geojson.coordinates),
               {
                 color: 'red',
               }
             ).addTo(this.#map);
-            console.log(polygon);
             this.#currentPolygons.push(polygon);
 
             this.#map.flyTo(marker.getLatLng(), 7);
@@ -367,21 +408,13 @@ export class MpLocationPicker extends HTMLElement {
             const foundMarker = this.#currentMarkers.find((_marker, idx) => index === idx);
             foundMarker.getElement().classList.add('active');
 
-            console.log(res.geojson.coordinates);
             this.#removePolygons();
             const polygon = L.polygon(
-              res.geojson.coordinates.map(shape => {
-                return shape.map(s => {
-                  const lng = s[0];
-                  const lat = s[1];
-                  return [lat, lng];
-                })
-              }),
+              this.#sanitizeGeojsonData(res.geojson.type, res.geojson.coordinates),
               {
                 color: 'red',
               }
             ).addTo(this.#map);
-            console.log(polygon);
             this.#currentPolygons.push(polygon);
 
             this.#map.flyTo(position, 13);
