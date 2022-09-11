@@ -1,3 +1,5 @@
+// https://icon-sets.iconify.design/
+
 export class MpIcon extends HTMLElement {
   #iconName;
   #width = '24px';

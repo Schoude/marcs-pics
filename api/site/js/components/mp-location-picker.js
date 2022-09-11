@@ -6,10 +6,11 @@ export class MpLocationPicker extends HTMLElement {
   #maxZoom = 19;
   // https://wiki.openstreetmap.org/wiki/Tile_servers
   #tileURL = 'https://tile.openstreetmap.de/{z}/{x}/{y}.png';
-  #nominatimURL = 'https://nominatim.openstreetmap.org/search?format=json&polygon=1&addressdetails=1&q=';
+  #nominatimURL = 'https://nominatim.openstreetmap.org/search?format=json&polygon_geojson=1&addressdetails=1&q=';
   #searchResults = [];
   #overviewPosition = [20.13847, 1.40625];
   #currentMarkers = [];
+  #currentPolygons = [];
   #selectedPosition = null;
   #selectedPositionPopup = null;
 
@@ -269,6 +270,13 @@ export class MpLocationPicker extends HTMLElement {
     }
   }
 
+  #removePolygons() {
+    this.#currentPolygons.forEach(shape => {
+      this.#map.removeLayer(shape);
+    });
+    this.#currentPolygons = [];
+  }
+
   #render() {
     this.innerHTML = this.#template;
 
@@ -335,6 +343,15 @@ export class MpLocationPicker extends HTMLElement {
 
             foundEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
+            const polygon = L.polygon(
+              res.geojson.coordinates,
+              {
+                color: 'red',
+              }
+            ).addTo(this.#map);
+            console.log(polygon);
+            this.#currentPolygons.push(polygon);
+
             this.#map.flyTo(marker.getLatLng(), 7);
           });
           this.#currentMarkers.push(marker);
@@ -349,6 +366,24 @@ export class MpLocationPicker extends HTMLElement {
             this.#clearMarkerClasses();
             const foundMarker = this.#currentMarkers.find((_marker, idx) => index === idx);
             foundMarker.getElement().classList.add('active');
+
+            console.log(res.geojson.coordinates);
+            this.#removePolygons();
+            const polygon = L.polygon(
+              res.geojson.coordinates.map(shape => {
+                return shape.map(s => {
+                  const lng = s[0];
+                  const lat = s[1];
+                  return [lat, lng];
+                })
+              }),
+              {
+                color: 'red',
+              }
+            ).addTo(this.#map);
+            console.log(polygon);
+            this.#currentPolygons.push(polygon);
+
             this.#map.flyTo(position, 13);
           });
         });
