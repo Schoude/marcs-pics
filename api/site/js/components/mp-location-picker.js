@@ -342,6 +342,7 @@ export class MpLocationPicker extends HTMLElement {
         // remove the previous markers
         // TODO: remove click event listeners on the markers
         this.#removeMarkers();
+        this.#removePolygons();
 
         this.#searchResults = await (await fetch(`${this.#nominatimURL}${query}`)).json();
         searchResultsContainer.removeAttribute('inert');
@@ -435,6 +436,7 @@ export class MpLocationPicker extends HTMLElement {
       this.#searchResults = [];
       this.#selectedPosition = null;
       this.#removeMarkers();
+      this.#removePolygons();
       this.#map.flyTo(this.#overviewPosition, this.#minZoom);
       this.#emit('update:position', this.#selectedPosition);
     });
