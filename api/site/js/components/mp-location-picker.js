@@ -58,7 +58,7 @@ export class MpLocationPicker extends HTMLElement {
 
       #search {
         position: absolute;
-        inset-block-start: 1%;
+        inset-block-start: 10px;
         inset-inline-start: 50%;
         translate: -50%;
         z-index: 401;
@@ -94,7 +94,7 @@ export class MpLocationPicker extends HTMLElement {
         z-index: 400;
         inline-size: 33%;
         background-color: hsl(0deg 0% 100% / 54%);
-        transition: translate 300ms ease;
+        transition: translate 200ms ease;
         color: black;
         display: flex;
         flex-direction: column;
@@ -108,31 +108,43 @@ export class MpLocationPicker extends HTMLElement {
 
       .search-results-container header {
         display: flex;
-        justify-content: end;
-        flex: 0;
-        padding: 1rem;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px;
+        border-block-end: 1px solid hsl(0 0% 75% / 45%);
       }
 
-      .search-results-container .side-menu-toggle {
-        position: absolute;
-        inset-block-start: 5%;
-        inset-inline-start: 0;
-        translate: -100%;
+      .side-menu-toggle-map,
+      .side-menu-toggle {
+        inline-size: 50px;
         block-size: 50px;
-        padding-inline: .33ex;
-        border: none;
-        background-color: hsl(0 0% 75% / 54%);
-        border-top: 1px solid black;
-        border-bottom: 1px solid black;
-        border-left: 1px solid black;
-        border-start-start-radius: var(--border-radius);
-        border-end-start-radius: var(--border-radius);
-        transition: background-color 200ms ease, border-color 200ms ease;
+        border-radius: 50%;
+        border: 2px solid rgba(0, 0, 0, 0.2);
+        z-index: 400;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px 0px rgba(0, 0 ,0, .33);
+        background-color: hsl(0, 0%, 100%);
+        transition: background-color 200ms ease, opacity 200ms ease;
       }
 
-      .search-results-container .side-menu-toggle:hover,
-      .search-results-container .side-menu-toggle:focus-visible {
-        background-color: hsl(0 0% 85% / 70%);
+      .side-menu-toggle-map:hover,
+      .side-menu-toggle-map:focus-visible,
+      .side-menu-toggle:hover,
+      .side-menu-toggle:focus-visible {
+        background-color: hsl(0, 0%, 96%);
+      }
+
+      .side-menu-toggle-map {
+        position: absolute;
+        inset-block-start: 10px;
+        inset-inline-end: 10px;
+      }
+
+      .side-menu-toggle-map.open {
+        opacity: 0;
+        pointer-events: none;
       }
 
       .search-results {
@@ -217,17 +229,21 @@ export class MpLocationPicker extends HTMLElement {
 
         <div id="map"></div>
 
-        <aside class="search-results-container closed">
+        <button type="button" class="side-menu-toggle-map">
+          <mp-icon icon-name="hamburger" width="32px"></mp-icon>
+        </button>
+
+        <aside class="search-results-container closed" inert>
           <header>
             <button type="button" class="search-results-delete">
               Suchergebnisse löschen
               <mp-icon icon-name="delete" width="20px" color="crimson"></mp-icon>
             </button>
+            <button type="button" class="side-menu-toggle">
+              <mp-icon icon-name="hamburger" width="32px"></mp-icon>
+            </button>
           </header>
           <ul class="search-results styled-scrollbars"></ul>
-          <button type="button" class="side-menu-toggle">
-            <mp-icon icon-name="arrowLeftRight" width="16px"></mp-icon>
-          </button>
         </aside>
       </div>
     `;
@@ -324,6 +340,7 @@ export class MpLocationPicker extends HTMLElement {
     const searchForm = this.querySelector('#search');
     const searchFormInput = this.querySelector('#search input[type="text"]');
     const searchResultsContainer = this.querySelector('.search-results-container');
+    const sideMenuToggleMap = this.querySelector('.side-menu-toggle-map');
     const searchResultsContainerToggle = this.querySelector('.side-menu-toggle');
     const searchResults = this.querySelector('.search-results');
     const searchResultsDeleteBtn = this.querySelector('.search-results-delete');
@@ -376,6 +393,7 @@ export class MpLocationPicker extends HTMLElement {
 
             if (searchResultsContainer.classList.contains('closed')) {
               searchResultsContainer.classList.toggle('closed');
+              searchResultsContainer.removeAttribute('inert');
               setTimeout(() => {
                 foundEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
               }, 1000);
@@ -441,8 +459,18 @@ export class MpLocationPicker extends HTMLElement {
       this.#emit('update:position', this.#selectedPosition);
     });
 
-    searchResultsContainerToggle.addEventListener('click', () => {
+    sideMenuToggleMap.addEventListener('click', () => {
+      sideMenuToggleMap.classList.toggle('open');
       searchResultsContainer.classList.toggle('closed');
+
+      searchResultsContainer.removeAttribute('inert');
+    });
+
+    searchResultsContainerToggle.addEventListener('click', () => {
+      sideMenuToggleMap.classList.toggle('open');
+      searchResultsContainer.classList.toggle('closed');
+
+      searchResultsContainer.setAttribute('inert', '');
     });
   }
 }
