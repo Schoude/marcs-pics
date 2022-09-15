@@ -364,6 +364,7 @@ export class MpLocationPicker extends HTMLElement {
         this.#searchResults = await (await fetch(`${this.#nominatimURL}${query}`)).json();
         searchResultsContainer.removeAttribute('inert');
         searchResultsContainer.classList.remove('closed');
+        sideMenuToggleMap.classList.add('open');
         console.log(this.#searchResults);
 
         if (this.#searchResults.length === 0) {
@@ -394,6 +395,8 @@ export class MpLocationPicker extends HTMLElement {
             if (searchResultsContainer.classList.contains('closed')) {
               searchResultsContainer.classList.toggle('closed');
               searchResultsContainer.removeAttribute('inert');
+              sideMenuToggleMap.classList.add('open');
+
               setTimeout(() => {
                 foundEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
               }, 1000);
